@@ -9,10 +9,8 @@ but WITHOUT ANY WARRANTY.
 */
 
 #include "stdafx.h"
-#include <iostream>
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
-
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
@@ -26,7 +24,8 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Renderer Test
-	g_Renderer->Test();
+	//g_Renderer->Test();
+	g_Renderer->Lecture3();
 
 	glutSwapBuffers();
 }

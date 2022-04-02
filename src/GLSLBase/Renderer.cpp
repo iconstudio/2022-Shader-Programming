@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <cassert>
 
+float Time = 0.0f;
+
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
 	//default settings
@@ -13,9 +15,49 @@ Renderer::Renderer(int windowSizeX, int windowSizeY)
 	Initialize(windowSizeX, windowSizeY);
 }
 
-
 Renderer::~Renderer()
 {
+	glDeleteShader(m_SolidRectShader);
+	glDeleteShader(m_ShaderLecture3);
+}
+
+void Renderer::Lecture3()
+{
+	auto shader = m_ShaderLecture3;
+
+	glUseProgram(shader);
+
+	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	auto uniformTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uniformTime, Time);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	Time -= 0.01f;
+	if (Time < 0.0f)
+	{
+		Time = 1.0f;
+	}
+
+	glDisableVertexAttribArray(attribPosition);
+}
+
+void Renderer::Test()
+{
+	glUseProgram(m_SolidRectShader);
+
+	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(attribPosition);
 }
 
 void Renderer::Initialize(int windowSizeX, int windowSizeY)
@@ -26,6 +68,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
+	m_ShaderLecture3 = CompileShaders("./Shaders/Lecture3.vs", "./Shaders/Lecture3.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -82,6 +125,7 @@ void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum S
 	p[0] = pShaderText;
 	GLint Lengths[1];
 	Lengths[0] = (GLint)strlen(pShaderText);
+
 	//쉐이더 코드를 쉐이더 오브젝트에 할당
 	glShaderSource(ShaderObj, 1, p, Lengths);
 
@@ -123,7 +167,7 @@ bool Renderer::ReadFile(char* filename, std::string *target)
 
 GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
 {
-	GLuint ShaderProgram = glCreateProgram(); //빈 쉐이더 프로그램 생성
+	GLuint ShaderProgram = glCreateProgram(); // 빈 쉐이더 프로그램 생성
 
 	if (ShaderProgram == 0) { //쉐이더 프로그램이 만들어졌는지 확인
 		fprintf(stderr, "Error creating shader program\n");
@@ -292,18 +336,4 @@ GLuint Renderer::CreateBmpTexture(char * filePath)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, bmp);
 
 	return temp;
-}
-
-void Renderer::Test()
-{
-	glUseProgram(m_SolidRectShader);
-
-	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(attribPosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glDisableVertexAttribArray(attribPosition);
 }
