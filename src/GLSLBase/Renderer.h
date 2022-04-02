@@ -51,6 +51,9 @@ private:
 	glm::mat4 m_m4ProjView;
 
 	GLuint m_VBORect = 0;
+	GLuint m_VBORectLecture2 = 0;
+	GLuint m_VBORectLecture3 = 0;
+
 	GLuint m_SolidRectShader = 0;
 	GLuint m_ShaderLecture3 = 0;
 };
