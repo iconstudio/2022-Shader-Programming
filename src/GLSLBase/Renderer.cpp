@@ -62,61 +62,74 @@ void Renderer::Lecture3Particle()
 	auto shader = m_ShaderLecture3Particle;
 	glUseProgram(shader);
 
-	/*
-		stride 값을 줘야 제대로 된 색을 읽는다.
-	*/
-	auto stride = sizeof(float) * 3;
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
 
+	auto stride = sizeof(float) * 6; // (x, y, z, sx, sy, sz)
 	int attribPosition = glGetAttribLocation(shader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
 	// (3 == stride) 라면 정점 갯수와 메모리 간격을 0으로 해도 된다. (어느것이든)
 
-	glDrawArrays(GL_TRIANGLES, 0, m_iManyParticleVertexCount);
+	int attribVelocity = glGetAttribLocation(shader, "a_Velocity");
+	glEnableVertexAttribArray(attribVelocity);
+	glVertexAttribPointer(attribVelocity, 3, GL_FLOAT, GL_FALSE
+		, stride, (GLvoid*)(sizeof(float) * 3));
 
-	Time -= 0.01f;
-	if (Time < 0.0f)
+	int uniformTime = glGetUniformLocation(shader, "u_Time");
+	glUniform1f(uniformTime, Time);
+
+	Time += 0.0001f;
+	if (1.0f <= Time)
 	{
-		Time = 1.0f;
+		Time = 0.0f;
 	}
+
+	glDrawArrays(GL_TRIANGLES, 0, m_iManyParticleVertexCount);
 
 	glDisableVertexAttribArray(attribPosition);
 }
+
 void Renderer::CreateParticle(int count)
 {
-	int floatCount = count * (3 + 3) * 3 * 2; //(x, y, z, vx, vy, vz)
-	float* particleVertices = new float[floatCount];
 	int vertexCount = count * 3 * 2;
+
+	//(x, y, z, sx, sy, sz)
+	int floatCount = count * (3 + 3) * 3 * 2;
+	float* particleVertices = new float[floatCount];
+
 	int index = 0;
 	float particleSize = 0.01f;
+	float randomValueX = 0.f;
+	float randomValueY = 0.f;
+	float randomValueZ = 0.f;
+	float randomValueVX = 0.f;
+	float randomValueVY = 0.f;
+	float randomValueVZ = 0.f;
+
 	for (int i = 0; i < count; i++)
 	{
-		float randomValueX = 0.f;
-		float randomValueY = 0.f;
-		float randomValueZ = 0.f;
-		float randomValueVX = 0.f;
-		float randomValueVY = 0.f;
-		float randomValueVZ = 0.f;
 		randomValueX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueZ = 0.f;
 		randomValueVX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVZ = 0.f;
+
 		//v0
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
 		index++;
 		particleVertices[index] = -particleSize / 2.f + randomValueY;
 		index++;
-		particleVertices[index] = 0.f;
+		particleVertices[index] = 0.1f;
 		index++; //Position XYZ
+
 		particleVertices[index] = randomValueVX;
 		index++;
 		particleVertices[index] = randomValueVY;
 		index++;
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
+
 		//v1
 		particleVertices[index] = particleSize / 2.f + randomValueX;
 		index++;
@@ -124,12 +137,14 @@ void Renderer::CreateParticle(int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++;
+
 		particleVertices[index] = randomValueVX;
 		index++;
 		particleVertices[index] = randomValueVY;
 		index++;
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
+
 		//v2
 		particleVertices[index] = particleSize / 2.f + randomValueX;
 		index++;
@@ -137,12 +152,14 @@ void Renderer::CreateParticle(int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++;
+
 		particleVertices[index] = randomValueVX;
 		index++;
 		particleVertices[index] = randomValueVY;
 		index++;
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
+
 		//v3
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
 		index++;
@@ -186,11 +203,12 @@ void Renderer::CreateParticle(int count)
 
 	glGenBuffers(1, &m_VBOManyParticle);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * floatCount, particleVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER
+		, sizeof(float) * floatCount, particleVertices, GL_STATIC_DRAW);
 
 	m_iManyParticleVertexCount = vertexCount;
 
-	delete[]particleVertices;
+	delete[] particleVertices;
 }
 
 void Renderer::Test()
@@ -294,8 +312,8 @@ void Renderer::CreateVertexBufferObjects()
 		 part_size, -part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
 		 part_size,  part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
 	};
-	glGenBuffers(1, &m_VBOManyParticle);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glGenBuffers(1, &m_VBOQuadLecture3Particle);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOQuadLecture3Particle);
 	glBufferData(GL_ARRAY_BUFFER
 		, sizeof(rect_lecture3particle), rect_lecture3particle
 		, GL_STATIC_DRAW);
