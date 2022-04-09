@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "Renderer.h"
 #include "LoadPng.h"
-#include <Windows.h>
-#include <cstdlib>
-#include <cassert>
 
 float Time = 0.0f;
 
@@ -24,7 +21,6 @@ Renderer::~Renderer()
 void Renderer::Lecture3()
 {
 	auto shader = m_ShaderLecture3;
-
 	glUseProgram(shader);
 
 	/*
@@ -61,6 +57,142 @@ void Renderer::Lecture3()
 	glDisableVertexAttribArray(attribPosition);
 }
 
+void Renderer::Lecture3Particle()
+{
+	auto shader = m_ShaderLecture3Particle;
+	glUseProgram(shader);
+
+	/*
+		stride 값을 줘야 제대로 된 색을 읽는다.
+	*/
+	auto stride = sizeof(float) * 3;
+
+	int attribPosition = glGetAttribLocation(shader, "a_Position");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, stride, 0);
+	// (3 == stride) 라면 정점 갯수와 메모리 간격을 0으로 해도 된다. (어느것이든)
+
+	glDrawArrays(GL_TRIANGLES, 0, m_iManyParticleVertexCount);
+
+	Time -= 0.01f;
+	if (Time < 0.0f)
+	{
+		Time = 1.0f;
+	}
+
+	glDisableVertexAttribArray(attribPosition);
+}
+void Renderer::CreateParticle(int count)
+{
+	int floatCount = count * (3 + 3) * 3 * 2; //(x, y, z, vx, vy, vz)
+	float* particleVertices = new float[floatCount];
+	int vertexCount = count * 3 * 2;
+	int index = 0;
+	float particleSize = 0.01f;
+	for (int i = 0; i < count; i++)
+	{
+		float randomValueX = 0.f;
+		float randomValueY = 0.f;
+		float randomValueZ = 0.f;
+		float randomValueVX = 0.f;
+		float randomValueVY = 0.f;
+		float randomValueVZ = 0.f;
+		randomValueX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueZ = 0.f;
+		randomValueVX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueVY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueVZ = 0.f;
+		//v0
+		particleVertices[index] = -particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = -particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Position XYZ
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+		//v1
+		particleVertices[index] = particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = -particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+		//v2
+		particleVertices[index] = particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+		//v3
+		particleVertices[index] = -particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = -particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+		//v4
+		particleVertices[index] = particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+		//v5
+		particleVertices[index] = -particleSize / 2.f + randomValueX;
+		index++;
+		particleVertices[index] = particleSize / 2.f + randomValueY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++;
+		particleVertices[index] = randomValueVX;
+		index++;
+		particleVertices[index] = randomValueVY;
+		index++;
+		particleVertices[index] = 0.f;
+		index++; //Velocity XYZ
+	}
+
+	glGenBuffers(1, &m_VBOManyParticle);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * floatCount, particleVertices, GL_STATIC_DRAW);
+
+	m_iManyParticleVertexCount = vertexCount;
+
+	delete[]particleVertices;
+}
+
 void Renderer::Test()
 {
 	glUseProgram(m_SolidRectShader);
@@ -84,9 +216,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	m_ShaderLecture3 = CompileShaders("./Shaders/Lecture3.vs", "./Shaders/Lecture3.fs");
+	m_ShaderLecture3Particle = CompileShaders("./Shaders/Lecture3Particle.vs", "./Shaders/Lecture3Particle.fs");
 
 	//Create VBOs
 	CreateVertexBufferObjects();
+	CreateParticle(1000);
 
 	//Initialize camera settings
 	m_v3Camera_Position = glm::vec3(0.f, 0.f, 1000.f);
@@ -124,7 +258,6 @@ void Renderer::CreateVertexBufferObjects()
 		0.5f, 0.5f, 0.0f
 		, 0.5f, -0.5f, 0.0f, // Triangle2
 	};
-
 	glGenBuffers(1, &m_VBORect);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
@@ -135,7 +268,6 @@ void Renderer::CreateVertexBufferObjects()
 		-0.5f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.f,
 	};
-
 	glGenBuffers(1, &m_VBORectLecture2);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectLecture2);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect_lecture2), rect_lecture2, GL_STATIC_DRAW);
@@ -146,10 +278,27 @@ void Renderer::CreateVertexBufferObjects()
 		1.0f, 1.0f, 0.0f,	0, 1, 0, 1,
 		1.0f, 0.0f, 0.0f,	0, 0, 1, 1,
 	};
-
 	glGenBuffers(1, &m_VBORectLecture3);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectLecture3);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect_lecture3), rect_lecture3, GL_STATIC_DRAW);
+
+	float part_size = 0.1f;
+	float rect_lecture3particle[] =
+	{
+		// 왼쪽 위 삼각형
+		-part_size, -part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+		 part_size,  part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+		-part_size,  part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+		// 오른쪽 아래 삼각형
+		-part_size, -part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+		 part_size, -part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+		 part_size,  part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	glGenBuffers(1, &m_VBOManyParticle);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOManyParticle);
+	glBufferData(GL_ARRAY_BUFFER
+		, sizeof(rect_lecture3particle), rect_lecture3particle
+		, GL_STATIC_DRAW);
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -190,7 +339,7 @@ void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum S
 	glAttachShader(ShaderProgram, ShaderObj);
 }
 
-bool Renderer::ReadFile(char* filename, std::string* target)
+bool Renderer::ReadFile(const char* filename, std::string* target)
 {
 	std::ifstream file(filename);
 	if (file.fail())
@@ -208,7 +357,7 @@ bool Renderer::ReadFile(char* filename, std::string* target)
 	return true;
 }
 
-GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
+GLuint Renderer::CompileShaders(const char* filenameVS, const char* filenameFS)
 {
 	GLuint ShaderProgram = glCreateProgram(); // 빈 쉐이더 프로그램 생성
 
@@ -270,11 +419,13 @@ GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
 
 	return ShaderProgram;
 }
-unsigned char* Renderer::loadBMPRaw(const char* imagepath, unsigned int& outWidth, unsigned int& outHeight)
+
+PUCHAR Renderer::loadBMPRaw(const char* image, UINT& width, UINT& height)
 {
-	std::cout << "Loading bmp file " << imagepath << " ... " << std::endl;
-	outWidth = -1;
-	outHeight = -1;
+	std::cout << "Loading bmp file " << image << " ... " << std::endl;
+	width = -1;
+	height = -1;
+
 	// Data read from the header of the BMP file
 	unsigned char header[54];
 	unsigned int dataPos;
@@ -284,44 +435,44 @@ unsigned char* Renderer::loadBMPRaw(const char* imagepath, unsigned int& outWidt
 
 	// Open the file
 	FILE* file = NULL;
-	fopen_s(&file, imagepath, "rb");
+	fopen_s(&file, image, "rb");
 	if (!file)
 	{
-		std::cout << "Image could not be opened, " << imagepath << " is missing. " << std::endl;
+		std::cout << "Image could not be opened, " << image << " is missing. " << std::endl;
 		return NULL;
 	}
 
 	if (fread(header, 1, 54, file) != 54)
 	{
-		std::cout << imagepath << " is not a correct BMP file. " << std::endl;
+		std::cout << image << " is not a correct BMP file. " << std::endl;
 		return NULL;
 	}
 
 	if (header[0] != 'B' || header[1] != 'M')
 	{
-		std::cout << imagepath << " is not a correct BMP file. " << std::endl;
+		std::cout << image << " is not a correct BMP file. " << std::endl;
 		return NULL;
 	}
 
 	if (*(int*)&(header[0x1E]) != 0)
 	{
-		std::cout << imagepath << " is not a correct BMP file. " << std::endl;
+		std::cout << image << " is not a correct BMP file. " << std::endl;
 		return NULL;
 	}
 
 	if (*(int*)&(header[0x1C]) != 24)
 	{
-		std::cout << imagepath << " is not a correct BMP file. " << std::endl;
+		std::cout << image << " is not a correct BMP file. " << std::endl;
 		return NULL;
 	}
 
 	dataPos = *(int*)&(header[0x0A]);
 	imageSize = *(int*)&(header[0x22]);
-	outWidth = *(int*)&(header[0x12]);
-	outHeight = *(int*)&(header[0x16]);
+	width = *(int*)&(header[0x12]);
+	height = *(int*)&(header[0x16]);
 
 	if (imageSize == 0)
-		imageSize = outWidth * outHeight * 3;
+		imageSize = width * height * 3;
 
 	if (dataPos == 0)
 		dataPos = 54;
@@ -332,17 +483,18 @@ unsigned char* Renderer::loadBMPRaw(const char* imagepath, unsigned int& outWidt
 
 	fclose(file);
 
-	std::cout << imagepath << " is succesfully loaded. " << std::endl;
+	std::cout << image << " is succesfully loaded. " << std::endl;
 
 	return data;
 }
 
-GLuint Renderer::CreatePngTexture(char* filePath)
+GLuint Renderer::CreatePngTexture(char* file)
 {
 	//Load Pngs: Load file and decode image.
 	std::vector<unsigned char> image;
+
 	unsigned width, height;
-	unsigned error = lodepng::decode(image, width, height, filePath);
+	unsigned error = lodepng::decode(image, width, height, file);
 	if (error != 0)
 	{
 		lodepng_error_text(error);
@@ -361,16 +513,16 @@ GLuint Renderer::CreatePngTexture(char* filePath)
 	return temp;
 }
 
-GLuint Renderer::CreateBmpTexture(char* filePath)
+GLuint Renderer::CreateBmpTexture(char* file)
 {
 	//Load Bmp: Load file and decode image.
 	unsigned int width, height;
 	unsigned char* bmp
-		= loadBMPRaw(filePath, width, height);
+		= loadBMPRaw(file, width, height);
 
 	if (bmp == NULL)
 	{
-		std::cout << "Error while loading bmp file : " << filePath << std::endl;
+		std::cout << "Error while loading bmp file : " << file << std::endl;
 		assert(bmp != NULL);
 		return -1;
 	}

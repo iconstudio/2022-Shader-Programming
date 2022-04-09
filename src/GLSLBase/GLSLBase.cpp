@@ -7,10 +7,9 @@ it under the terms of the What The Hell License. Do it plz.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 */
-
 #include "stdafx.h"
-#include "Dependencies\glew.h"
-#include "Dependencies\freeglut.h"
+#include "Dependencies/glew.h"
+#include "Dependencies/freeglut.h"
 #include "Renderer.h"
 
 Renderer *g_Renderer = NULL;
@@ -25,7 +24,7 @@ void RenderScene(void)
 
 	// Renderer Test
 	//g_Renderer->Test();
-	g_Renderer->Lecture3();
+	g_Renderer->Lecture3Particle();
 
 	glutSwapBuffers();
 }

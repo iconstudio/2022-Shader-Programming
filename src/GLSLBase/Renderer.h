@@ -5,11 +5,11 @@
 #include <fstream>
 #include <iostream>
 
-#include "Dependencies\glew.h"
-#include "Dependencies\wglew.h"
-#include "Dependencies\glm/glm.hpp"
-#include "Dependencies\glm/gtc/matrix_transform.hpp"
-#include "Dependencies\glm/gtx/euler_angles.hpp"
+#include "Dependencies/glew.h"
+#include "Dependencies/wglew.h"
+#include "Dependencies/glm/glm.hpp"
+#include "Dependencies/glm/gtc/matrix_transform.hpp"
+#include "Dependencies/glm/gtx/euler_angles.hpp"
 
 class Renderer
 {
@@ -17,20 +17,21 @@ public:
 	Renderer(int windowSizeX, int windowSizeY);
 	~Renderer();
 
+	void Test();
 	void Lecture3();
+	void Lecture3Particle();
+	void CreateParticle(int count);
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
 
-	void Test();
-
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
-	bool ReadFile(char* filename, std::string* target);
+	bool ReadFile(const char* filename, std::string* target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
-	GLuint CompileShaders(char* filenameVS, char* filenameFS);
+	GLuint CompileShaders(const char* file_vs, const char* file_fs);
 	void CreateVertexBufferObjects();
-	unsigned char* Renderer::loadBMPRaw(const char* imagepath, unsigned int& outWidth, unsigned int& outHeight);
+	PUCHAR loadBMPRaw(const char* image, UINT& width, UINT& height);
 
 	bool m_Initialized = false;
 
@@ -53,8 +54,12 @@ private:
 	GLuint m_VBORect = 0;
 	GLuint m_VBORectLecture2 = 0;
 	GLuint m_VBORectLecture3 = 0;
+	GLuint m_VBOQuadLecture3Particle = 0; // single particle
+	GLuint m_VBOManyParticle = 0;
+	GLuint m_iManyParticleVertexCount = 0;
 
 	GLuint m_SolidRectShader = 0;
 	GLuint m_ShaderLecture3 = 0;
+	GLuint m_ShaderLecture3Particle = 0;
 };
 
