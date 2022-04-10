@@ -8,11 +8,9 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY.
 */
 #include "stdafx.h"
-#include "Dependencies/glew.h"
-#include "Dependencies/freeglut.h"
-#include "Renderer.h"
+#include "Renderer.hpp"
 
-Renderer *g_Renderer = NULL;
+Renderer* g_Renderer = NULL;
 
 int g_WindowSizeX = 500;
 int g_WindowSizeY = 500;
@@ -22,9 +20,8 @@ void RenderScene(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Renderer Test
-	//g_Renderer->Test();
-	g_Renderer->Lecture3Particle();
+	//  파이프라인
+	g_Renderer->Lecture3();
 
 	glutSwapBuffers();
 }
@@ -49,7 +46,7 @@ void SpecialKeyInput(int key, int x, int y)
 	RenderScene();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	// Initialize GL things
 	glutInit(&argc, argv);
@@ -61,7 +58,7 @@ int main(int argc, char **argv)
 	glewInit();
 	if (glewIsSupported("GL_VERSION_4_6"))
 	{
-		std::cout << " GL Version is 4.6\n ";
+		std::cout << " GL Version is 4.6\n\n";
 	}
 	else
 	{
@@ -81,6 +78,5 @@ int main(int argc, char **argv)
 
 	delete g_Renderer;
 
-    return 0;
+	return 0;
 }
-

@@ -13,9 +13,24 @@
     <ClCompile Include="LoadPng.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Pipeline.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexObjet.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributeView.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Renderer.h">
+    <ClInclude Include="Renderer.hpp">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -25,6 +40,21 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="LoadPng.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.hpp">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Pipeline.hpp">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexObjet.hpp">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.hpp">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributeView.hpp">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,15 +71,12 @@
     <None Include="Shaders\Lecture3.vs">
       <Filter>Shader</Filter>
     </None>
-    <None Include="Shaders\Lecture3Particle.vs">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="Shaders\Lecture3Particle.fs">
       <Filter>Shader</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <None Include="Shaders\Lecture3Particle.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
