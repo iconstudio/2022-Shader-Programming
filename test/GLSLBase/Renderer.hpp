@@ -7,6 +7,19 @@
 #include "./Dependencies/glm/gtc/matrix_transform.hpp"
 #include "./Dependencies/glm/gtx/euler_angles.hpp"
 
+enum class PRIMITIVE_METHODS : GLenum
+{
+	LINES = GL_LINES
+	, LINE_STRIP = GL_LINE_STRIP				// 0x0003
+	, TRIANGLES = GL_TRIANGLES					// 0x0004
+	, TRIANGLE_STRIP = GL_TRIANGLE_STRIP		// 0x0005
+	, TRIANGLE_FAN = GL_TRIANGLE_FAN			// 0x0006
+	, QUADS = GL_QUADS							// 0x0007
+	, QUAD_STRIP = GL_QUAD_STRIP				// 0x0008
+	, POLYGON = GL_POLYGON						// 0x0009
+	, POLYGON_STIPPLE = GL_POLYGON_STIPPLE_BIT	// 0x00000010
+};
+
 class Renderer
 {
 public:
@@ -27,12 +40,13 @@ private:
 	void CreateVertexBufferObjects();
 	void CreateParticle(const int count);
 
+	void Render(PRIMITIVE_METHODS method, GLint first, GLsizei count);
+
 	PUCHAR loadBMPRaw(const char* image, UINT& w, UINT& h);
 
 	bool Ready = false;
-
-	unsigned int m_WindowSizeX = 0;
-	unsigned int m_WindowSizeY = 0;
+	unsigned int windowWidth = 0;
+	unsigned int windowHeight = 0;
 
 	glm::vec3 cameraPositions; //camera position
 	glm::vec3 cameraLookAt; //camera lookat position
@@ -48,10 +62,10 @@ private:
 	Pipeline plLecture2;
 	Pipeline plLecture3, plLecture3Particle;
 
-	VertexObjet m_VBORect;
-	VertexObjet m_VBORectLecture2;
-	VertexObjet m_VBORectLecture3;
-	VertexObjet m_QuadManyParticle;
-	GLuint m_iManyParticleVertexCount = 0;
+	VertexObjet vbSolidRect;
+	VertexObjet vbLecture2;
+	VertexObjet vbLecture3;
+	VertexObjet vbQuadParticle;
+	GLuint countParticleVertex = 0;
 };
 

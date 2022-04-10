@@ -4,6 +4,7 @@
 #include "Shader.hpp"
 #include "VertexObjet.hpp"
 #include "VertexBuffer.hpp"
+#include "UniformView.hpp"
 #include "AttributeView.hpp"
 #include "LoadPng.h"
 
@@ -11,9 +12,9 @@ float Time = 0.0f;
 
 Renderer::Renderer(int width, int height)
 	: plSolidRect(), plLecture2(), plLecture3(), plLecture3Particle()
-	, m_VBORect()
-	, m_VBORectLecture2()
-	, m_VBORectLecture3(), m_QuadManyParticle()
+	, vbSolidRect()
+	, vbLecture2()
+	, vbLecture3(), vbQuadParticle()
 {
 	glClearDepth(1.f);
 
@@ -26,7 +27,7 @@ void Renderer::Lecture3()
 {
 	auto& pipeline = plLecture3;
 	pipeline.Use();
-	pipeline.UseBuffer(m_VBORectLecture3, GL_ARRAY_BUFFER);
+	pipeline.UseBuffer(vbLecture3, GL_ARRAY_BUFFER);
 
 	// stride 값을 줘야 제대로 된 색을 읽는다.
 	GLsizei stride = sizeof(float) * 7;
@@ -40,12 +41,12 @@ void Renderer::Lecture3()
 	attrColor.Stream(GL_FLOAT, 4, stride, (GLvoid*)(sizeof(float) * 3)); // 4번째 부터 읽기
 
 	auto uniformTime = pipeline.GetUniform("u_Time");
-	glUniform1f(uniformTime, Time);
+	uniformTime.Stream(Time);
 
 	auto uniformColor = pipeline.GetUniform("u_Color");
-	glUniform4f(uniformColor, 1, 1, 1, 1);
+	uniformColor.Stream(1.0f, 1.0f, 1.0f, 1.0f);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
 
 	Time -= 0.01f;
 	if (Time < 0.0f)
@@ -61,7 +62,7 @@ void Renderer::Lecture3Particle()
 {
 	auto& pipeline = plLecture3Particle;
 	pipeline.Use();
-	pipeline.UseBuffer(m_QuadManyParticle, GL_ARRAY_BUFFER);
+	pipeline.UseBuffer(vbQuadParticle, GL_ARRAY_BUFFER);
 
 	GLsizei stride = sizeof(float) * 6; // (x, y, z, sx, sy, sz)
 
@@ -75,7 +76,7 @@ void Renderer::Lecture3Particle()
 	attrVelocity.Stream(GL_FLOAT, 3, stride, (GLvoid*)(sizeof(float) * 3)); // 4번째 부터 읽기
 
 	auto uniformTime = pipeline.GetUniform("u_Time");
-	glUniform1f(uniformTime, Time);
+	uniformTime.Stream(Time);
 
 	Time += 0.0001f;
 	if (1.0f <= Time)
@@ -83,7 +84,7 @@ void Renderer::Lecture3Particle()
 		Time = 0.0f;
 	}
 
-	glDrawArrays(GL_TRIANGLES, 0, m_iManyParticleVertexCount);
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, countParticleVertex);
 
 	attrPosition.DisableVertexArray();
 	attrVelocity.DisableVertexArray();
@@ -93,7 +94,7 @@ void Renderer::Test()
 {
 	auto& pipeline = plSolidRect;
 	pipeline.Use();
-	pipeline.UseBuffer(m_VBORect, GL_ARRAY_BUFFER);
+	pipeline.UseBuffer(vbSolidRect, GL_ARRAY_BUFFER);
 
 	// 여기서 stride 값은 사실 0이어도 된다.
 	GLsizei stride = sizeof(float) * 3;
@@ -102,7 +103,7 @@ void Renderer::Test()
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
 	attrPosition.DisableVertexArray();
 }
@@ -110,8 +111,8 @@ void Renderer::Test()
 void Renderer::Initialize(int width, int height)
 {
 	// Set window size
-	m_WindowSizeX = width;
-	m_WindowSizeY = height;
+	windowWidth = width;
+	windowHeight = height;
 
 	// 
 	plSolidRect.AssignProgram(CreatePipeline());
@@ -180,7 +181,7 @@ void Renderer::CreateVertexBufferObjects()
 	};
 	VertexBuffer rect_vbo(GL_ARRAY_BUFFER);
 	rect_vbo.Bind(rect, sizeof(rect), GL_STATIC_DRAW);
-	m_VBORect.Attach(&rect_vbo, 1);
+	vbSolidRect.Attach(&rect_vbo, 1);
 
 	float rect_lecture2[] =
 	{
@@ -190,7 +191,7 @@ void Renderer::CreateVertexBufferObjects()
 	};
 	VertexBuffer lecture2_vbo(GL_ARRAY_BUFFER);
 	lecture2_vbo.Bind(rect_lecture2, sizeof(rect_lecture2), GL_STATIC_DRAW);
-	m_VBORectLecture2.Attach(&lecture2_vbo, 1);
+	vbLecture2.Attach(&lecture2_vbo, 1);
 
 	float rect_lecture3[] =
 	{
@@ -200,7 +201,7 @@ void Renderer::CreateVertexBufferObjects()
 	};
 	VertexBuffer lecture3_vbo(GL_ARRAY_BUFFER);
 	lecture3_vbo.Bind(rect_lecture3, sizeof(rect_lecture3), GL_STATIC_DRAW);
-	m_VBORectLecture3.Attach(&lecture3_vbo, 1);
+	vbLecture3.Attach(&lecture3_vbo, 1);
 
 	float part_size = 0.1f;
 	float rect_lecture3part[] =
@@ -216,7 +217,7 @@ void Renderer::CreateVertexBufferObjects()
 	};
 	VertexBuffer lecture3part_vbo(GL_ARRAY_BUFFER);
 	lecture3part_vbo.Bind(rect_lecture3part, sizeof(rect_lecture3part), GL_STATIC_DRAW);
-	m_QuadManyParticle.Attach(&lecture3part_vbo, 1);
+	vbQuadParticle.Attach(&lecture3part_vbo, 1);
 }
 
 void Renderer::CreateParticle(const int count)
@@ -333,13 +334,18 @@ void Renderer::CreateParticle(const int count)
 		index++; //Velocity XYZ
 	}
 
-	m_QuadManyParticle.Assign(GL_ARRAY_BUFFER, 1);
-	//m_QuadManyParticle.SetBufferType(GL_ARRAY_BUFFER);
-	m_QuadManyParticle.BindData(particleVertices, sizeof(float) * floatCount, GL_STATIC_DRAW);
+	vbQuadParticle.Assign(GL_ARRAY_BUFFER, 1);
+	//vbQuadParticle.SetBufferType(GL_ARRAY_BUFFER);
+	vbQuadParticle.BindData(particleVertices, sizeof(float) * floatCount, GL_STATIC_DRAW);
 
-	m_iManyParticleVertexCount = vertexCount;
+	countParticleVertex = vertexCount;
 
 	delete[] particleVertices;
+}
+
+void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)
+{
+	glDrawArrays(static_cast<GLenum>(method), first, count);
 }
 
 PUCHAR Renderer::loadBMPRaw(const char* image, UINT& width, UINT& height)

@@ -2,6 +2,7 @@
 #include "Pipeline.hpp"
 #include "Shader.hpp"
 #include "VertexObjet.hpp"
+#include "UniformView.hpp"
 #include "AttributeView.hpp"
 
 Pipeline::Pipeline() : Pipeline(0) {}
@@ -116,9 +117,10 @@ void Pipeline::UseBuffer(GLint buffer, GLenum type)
 	glBindBuffer(type, buffer);
 }
 
-GLint Pipeline::GetUniform(const char* name) const
+UniformView Pipeline::GetUniform(const char* name) const
 {
-	return glGetUniformLocation(Self, name);
+	auto id = glGetUniformLocation(Self, name);
+	return (UniformView(id));
 }
 
 AttributeView Pipeline::GetAttribute(const char* name) const

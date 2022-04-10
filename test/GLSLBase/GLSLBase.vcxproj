@@ -162,6 +162,7 @@
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UniformView.hpp" />
     <ClInclude Include="VertexBuffer.hpp" />
     <ClInclude Include="VertexObjet.hpp" />
   </ItemGroup>
@@ -178,10 +179,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="UniformView.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexObjet.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cpp.hint" />
     <None Include="Shaders\Lecture3.fs" />
     <None Include="Shaders\Lecture3.vs" />
     <None Include="Shaders\Lecture3Particle.fs" />

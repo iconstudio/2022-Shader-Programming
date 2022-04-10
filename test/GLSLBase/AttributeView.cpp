@@ -1,9 +1,7 @@
 #include "stdafx.h"
 #include "AttributeView.hpp"
 
-AttributeView::AttributeView(const GLint id)
-	: Self(id)
-{}
+AttributeView::AttributeView(const GLint id) : Self(id) {}
 
 void AttributeView::EnableVertexArray() const
 {

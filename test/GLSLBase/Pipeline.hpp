@@ -25,6 +25,6 @@ public:
 	void UseBuffer(VertexObjet& buffer, GLenum type);
 	void UseBuffer(GLint buffer, GLenum type);
 
-	GLint GetUniform(const char* name) const;
+	UniformView GetUniform(const char* name) const;
 	AttributeView GetAttribute(const char* name) const;
 };
