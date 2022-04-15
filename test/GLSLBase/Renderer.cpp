@@ -40,9 +40,6 @@ void Renderer::Lecture3()
 	attrColor.EnableVertexArray();
 	attrColor.Stream(GL_FLOAT, 4, stride, (GLvoid*)(sizeof(float) * 3)); // 4번째 부터 읽기
 
-	auto uniformTime = pipeline.GetUniform("u_Time");
-	uniformTime.Stream(Time);
-
 	auto uniformColor = pipeline.GetUniform("u_Color");
 	uniformColor.Stream(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -64,7 +61,7 @@ void Renderer::Lecture3Particle()
 	pipeline.Use();
 	pipeline.UseBuffer(vbQuadParticle, GL_ARRAY_BUFFER);
 
-	GLsizei stride = sizeof(float) * 6; // (x, y, z, sx, sy, sz)
+	GLsizei stride = sizeof(float) * 8; // (x, y, z, sx, sy, sz, et, lt)
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
@@ -75,19 +72,30 @@ void Renderer::Lecture3Particle()
 	attrVelocity.EnableVertexArray();
 	attrVelocity.Stream(GL_FLOAT, 3, stride, (GLvoid*)(sizeof(float) * 3)); // 4번째 부터 읽기
 
+	auto attrEmitTime = pipeline.GetAttribute("a_EmitTime");
+	attrEmitTime.EnableVertexArray();
+	attrEmitTime.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 6)); // 7번째 부터 읽기
+
+	auto attrDuration = pipeline.GetAttribute("a_Duration");
+	attrDuration.EnableVertexArray();
+	attrDuration.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 7)); // 8번째 부터 읽기
+
 	auto uniformTime = pipeline.GetUniform("u_Time");
 	uniformTime.Stream(Time);
 
-	Time += 0.0001f;
+	auto uniformAccel = pipeline.GetUniform("u_Acceleration");
+	uniformAccel.Stream(std::cos(Time), 0.0f, 0.0f);
+
+	Time += 0.001f;
 	if (1.0f <= Time)
 	{
-		Time = 0.0f;
+		//Time = 0.0f;
 	}
 
 	Render(PRIMITIVE_METHODS::TRIANGLES, 0, countParticleVertex);
 
 	attrPosition.DisableVertexArray();
-	attrVelocity.DisableVertexArray();
+	//attrVelocity.DisableVertexArray();
 }
 
 void Renderer::Test()
@@ -224,8 +232,8 @@ void Renderer::CreateParticle(const int count)
 {
 	const int vertexCount = count * 3 * 2;
 
-	// (x, y, z, sx, sy, sz) * 정점 3개 * 삼각형 2개
-	const int floatCount = count * (3 + 3) * 3 * 2;
+	// (x, y, z, sx, sy, sz, et, lt) * 정점 3개 * 삼각형 2개
+	const int floatCount = vertexCount * (3 + 3 + 2);
 	float* particleVertices = new float[floatCount];
 
 	int index = 0;
@@ -236,6 +244,8 @@ void Renderer::CreateParticle(const int count)
 	float randomValueVX = 0.f;
 	float randomValueVY = 0.f;
 	float randomValueVZ = 0.f;
+	float randomTimeEmit = 0.f;
+	float randomTimeDuration = 0.f;
 
 	for (int i = 0; i < count; i++)
 	{
@@ -245,21 +255,22 @@ void Renderer::CreateParticle(const int count)
 		randomValueVX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVZ = 0.f;
+		randomTimeEmit = ((float)rand() / (float)RAND_MAX) * 5.0f; // 0~5
+		randomTimeDuration = ((float)rand() / (float)RAND_MAX) * 2.0f; // 0~5
 
 		//v0
-		particleVertices[index] = -particleSize / 2.f + randomValueX;
-		index++;
-		particleVertices[index] = -particleSize / 2.f + randomValueY;
-		index++;
-		particleVertices[index] = 0.1f;
-		index++; //Position XYZ
+		//Position XYZ
+		particleVertices[index++] = -particleSize / 2.f + randomValueX;
+		particleVertices[index++] = -particleSize / 2.f + randomValueY;
+		particleVertices[index++] = 0.1f;
 
-		particleVertices[index] = randomValueVX;
-		index++;
-		particleVertices[index] = randomValueVY;
-		index++;
-		particleVertices[index] = 0.f;
-		index++; //Velocity XYZ
+		//Velocity XYZ
+		particleVertices[index++] = randomValueVX;
+		particleVertices[index++] = randomValueVY;
+		particleVertices[index++] = 0.f;
+
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
 
 		//v1
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -269,12 +280,16 @@ void Renderer::CreateParticle(const int count)
 		particleVertices[index] = 0.f;
 		index++;
 
+		//Velocity XYZ
 		particleVertices[index] = randomValueVX;
 		index++;
 		particleVertices[index] = randomValueVY;
 		index++;
 		particleVertices[index] = 0.f;
-		index++; //Velocity XYZ
+		index++;
+
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
 
 		//v2
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -291,6 +306,9 @@ void Renderer::CreateParticle(const int count)
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
 
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
+
 		//v3
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
 		index++;
@@ -304,6 +322,9 @@ void Renderer::CreateParticle(const int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
+
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
 
 		//v4
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -319,6 +340,9 @@ void Renderer::CreateParticle(const int count)
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
 
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
+
 		//v5
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
 		index++;
@@ -332,6 +356,9 @@ void Renderer::CreateParticle(const int count)
 		index++;
 		particleVertices[index] = 0.f;
 		index++; //Velocity XYZ
+
+		particleVertices[index++] = randomTimeEmit;
+		particleVertices[index++] = randomTimeDuration;
 	}
 
 	vbQuadParticle.Assign(GL_ARRAY_BUFFER, 1);

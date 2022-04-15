@@ -21,7 +21,7 @@ void RenderScene(void)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	//  파이프라인
-	g_Renderer->Lecture3();
+	g_Renderer->Lecture3Particle();
 
 	glutSwapBuffers();
 }

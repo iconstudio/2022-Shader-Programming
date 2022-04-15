@@ -9,6 +9,13 @@ public:
 	void EnableVertexArray() const;
 	void DisableVertexArray() const;
 
+	/// <summary>
+	/// glVertexAttribPointer(Self, length, type, GL_FALSE, stride, begin);
+	/// </summary>
+	/// <param name="type"></param>
+	/// <param name="length"></param>
+	/// <param name="stride"></param>
+	/// <param name="begin"></param>
 	void Stream(const GLenum type
 		, const GLint length
 		, const GLsizei stride = 0

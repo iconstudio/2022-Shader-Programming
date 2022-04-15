@@ -99,7 +99,12 @@ void Pipeline::Readymade()
 	}
 
 	glUseProgram(Self);
-	std::cout << vpath.filename() << ", " << fpath.filename() << " → 컴파일 완료.\n";
+
+	auto caption = vpath.filename().string();
+	auto it = caption.end() - 3;
+	caption.erase(it, caption.end());
+
+	std::cout << caption << " → 컴파일 완료.\n";
 }
 
 void Pipeline::Use() const
