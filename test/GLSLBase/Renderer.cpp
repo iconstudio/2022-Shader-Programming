@@ -61,30 +61,42 @@ void Renderer::Lecture3Particle()
 	pipeline.Use();
 	pipeline.UseBuffer(vbQuadParticle, GL_ARRAY_BUFFER);
 
-	GLsizei stride = sizeof(float) * 8; // (x, y, z, sx, sy, sz, et, lt)
+	GLsizei stride = sizeof(float) * 10; // (x, y, z, sx, sy, sz, et, lt, amp, period)
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
-	// (3 * float == stride) 라면 정점 갯수와 메모리 간격을 0으로 해도 된다. (어느것이든)
 
 	auto attrVelocity = pipeline.GetAttribute("a_Velocity");
 	attrVelocity.EnableVertexArray();
-	attrVelocity.Stream(GL_FLOAT, 3, stride, (GLvoid*)(sizeof(float) * 3)); // 4번째 부터 읽기
+	// 4번째 부터 읽기
+	attrVelocity.Stream(GL_FLOAT, 3, stride, (GLvoid*)(sizeof(float) * 3));
 
 	auto attrEmitTime = pipeline.GetAttribute("a_EmitTime");
 	attrEmitTime.EnableVertexArray();
-	attrEmitTime.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 6)); // 7번째 부터 읽기
+	// 7번째 부터 읽기
+	attrEmitTime.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 6));
 
 	auto attrDuration = pipeline.GetAttribute("a_Duration");
 	attrDuration.EnableVertexArray();
-	attrDuration.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 7)); // 8번째 부터 읽기
+	// 8번째 부터 읽기
+	attrDuration.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 7));
+
+	auto attrCurveAmp = pipeline.GetAttribute("a_CurveAmplify");
+	attrCurveAmp.EnableVertexArray();
+	// 9번째 부터 읽기
+	attrCurveAmp.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 8));
+
+	auto attrCurvePeriod = pipeline.GetAttribute("a_CurvePeriod");
+	attrCurvePeriod.EnableVertexArray();
+	// 10번째 부터 읽기
+	attrCurvePeriod.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 9));
 
 	auto uniformTime = pipeline.GetUniform("u_Time");
 	uniformTime.Stream(Time);
 
 	auto uniformAccel = pipeline.GetUniform("u_Acceleration");
-	uniformAccel.Stream(std::cos(Time), 0.0f, 0.0f);
+	uniformAccel.Stream(0.2f, 0.0f, 0.0f); // std::cos(Time)
 
 	auto uniformLoop = pipeline.GetUniform("u_Loop");
 	uniformLoop.Stream(true);
@@ -150,7 +162,7 @@ void Renderer::Initialize(int width, int height)
 
 	// Create VBOs
 	CreateVertexBufferObjects();
-	CreateLecture3Particle(5);
+	CreateLecture3Particle(1000);
 
 	// Initialize camera settings
 	cameraPositions = glm::vec3(0.f, 0.f, 1000.f);
@@ -240,12 +252,12 @@ void Renderer::CreateLecture3Particle(const int count)
 {
 	const int vertexCount = count * 3 * 2;
 
-	// (x, y, z, sx, sy, sz, et, lt) * 정점 3개 * 삼각형 2개
-	const int floatCount = vertexCount * (3 + 3 + 2);
+	// (x, y, z, sx, sy, sz, et, lt, amp, period) * 정점 3개 * 삼각형 2개
+	const int floatCount = vertexCount * (3 + 3 + 3 + 2);
 	float* particleVertices = new float[floatCount];
 
 	int index = 0;
-	float particleSize = 0.1f;
+	float particleSize = 0.01f;
 	float randomValueX = 0.f;
 	float randomValueY = 0.f;
 	float randomValueZ = 0.f;
@@ -254,17 +266,24 @@ void Renderer::CreateLecture3Particle(const int count)
 	float randomValueVZ = 0.f;
 	float randomTimeEmit = 0.f;
 	float randomTimeDuration = 0.f;
+	float randomCurveAmplify = 0.f;
+	float randomCurvePeriod = 0.f;
 
 	for (int i = 0; i < count; i++)
 	{
-		randomValueX = 0.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
-		randomValueY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		randomValueX = 0.f;//((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		randomValueY = 0.f;//((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
 		randomValueZ = 0.f;
+
 		randomValueVX = 1.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVY = 0.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVZ = 0.f;
-		randomTimeEmit = 0.f; //((float)rand() / (float)RAND_MAX) * 2.0f; // 0~2
+
+		randomTimeEmit = ((float)rand() / (float)RAND_MAX) * 2.0f; // 0~2
 		randomTimeDuration = 1.f; //((float)rand() / (float)RAND_MAX) * 4.0f; // 0~4
+
+		randomCurveAmplify = ((float)rand() / (float)RAND_MAX) * 1.0f; // 0~4
+		randomCurvePeriod = ((float)rand() / (float)RAND_MAX) * 2.0f; // 0~2
 
 		//v0
 		//Position XYZ
@@ -279,6 +298,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 
 		//v1
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -298,6 +319,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 
 		//v2
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -316,6 +339,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 
 		//v3
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
@@ -333,6 +358,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 
 		//v4
 		particleVertices[index] = particleSize / 2.f + randomValueX;
@@ -350,6 +377,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 
 		//v5
 		particleVertices[index] = -particleSize / 2.f + randomValueX;
@@ -367,6 +396,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		particleVertices[index++] = randomTimeEmit;
 		particleVertices[index++] = randomTimeDuration;
+		particleVertices[index++] = randomCurveAmplify;
+		particleVertices[index++] = randomCurvePeriod;
 	}
 
 	vbQuadParticle.Assign(GL_ARRAY_BUFFER, 1);
