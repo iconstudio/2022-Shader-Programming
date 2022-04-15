@@ -4,10 +4,6 @@
 
 class Pipeline
 {
-private:
-	GLuint Self; // 프로그램
-	std::shared_ptr<Shader> shVertex, shFragment;
-
 public:
 	Pipeline();
 	Pipeline(const GLuint program);
@@ -27,4 +23,8 @@ public:
 
 	UniformView GetUniform(const char* name) const;
 	AttributeView GetAttribute(const char* name) const;
+
+private:
+	GLuint Self; // 프로그램
+	std::shared_ptr<Shader> shVertex, shFragment;
 };

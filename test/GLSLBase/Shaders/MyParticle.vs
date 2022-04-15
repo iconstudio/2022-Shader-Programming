@@ -7,7 +7,6 @@ in float a_Duration;
 
 uniform float u_Time;
 uniform vec3 u_Acceleration;
-uniform bool u_Loop;
 
 float sqr(float value)
 {
@@ -16,20 +15,11 @@ float sqr(float value)
 
 void main()
 {
+	float t = u_Time - a_EmitTime;
+
 	vec3 out_position = vec3(-100f, -100f, -100f);
-	
-	float time = (u_Time - a_EmitTime);
-
-	if (0 <= time)
+	if (0 < t)
 	{
-		float t = time;
-		if (u_Loop) {
-			float normal = time / a_Duration;
-			float infra = fract(normal);
-		
-			t = infra * a_Duration;
-		}
-
 		float sqr_t = sqr(t);
 		out_position = a_Position + t * a_Velocity + 0.5f * u_Acceleration * sqr_t;
 	}

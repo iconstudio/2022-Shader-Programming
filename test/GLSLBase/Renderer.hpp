@@ -29,6 +29,7 @@ public:
 	void Test();
 	void Lecture3();
 	void Lecture3Particle();
+	void MyParticle();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
@@ -38,7 +39,7 @@ private:
 
 	GLuint CreatePipeline();
 	void CreateVertexBufferObjects();
-	void CreateParticle(const int count);
+	void CreateLecture3Particle(const int count);
 
 	void Render(PRIMITIVE_METHODS method, GLint first, GLsizei count);
 

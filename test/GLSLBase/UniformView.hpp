@@ -20,6 +20,9 @@ public:
 	template<typename... Ty>
 	void StreamArray(const Ty... args) const;
 
+	template<>
+	void Stream<bool>(const bool arg0) const;
+
 private:
 	GLint Self;
 };
@@ -52,4 +55,10 @@ template<typename ...Ty>
 inline void UniformView::StreamArray(const Ty ...args) const
 {
 
+}
+
+template<>
+inline void UniformView::Stream(const bool arg0) const
+{
+	glUniform1i(Self, arg0);
 }

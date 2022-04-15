@@ -31,6 +31,9 @@
     <ClCompile Include="UniformView.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Playground.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.hpp">
@@ -63,6 +66,9 @@
     <ClInclude Include="UniformView.hpp">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Playground.hpp">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SolidRect.vs">
@@ -84,6 +90,12 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="cpp.hint" />
+    <None Include="Shaders\MyParticle.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\MyParticle.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

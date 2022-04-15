@@ -86,6 +86,9 @@ void Renderer::Lecture3Particle()
 	auto uniformAccel = pipeline.GetUniform("u_Acceleration");
 	uniformAccel.Stream(std::cos(Time), 0.0f, 0.0f);
 
+	auto uniformLoop = pipeline.GetUniform("u_Loop");
+	uniformLoop.Stream(true);
+
 	Time += 0.001f;
 	if (1.0f <= Time)
 	{
@@ -95,7 +98,12 @@ void Renderer::Lecture3Particle()
 	Render(PRIMITIVE_METHODS::TRIANGLES, 0, countParticleVertex);
 
 	attrPosition.DisableVertexArray();
-	//attrVelocity.DisableVertexArray();
+	attrVelocity.DisableVertexArray();
+}
+
+void Renderer::MyParticle()
+{
+
 }
 
 void Renderer::Test()
@@ -142,7 +150,7 @@ void Renderer::Initialize(int width, int height)
 
 	// Create VBOs
 	CreateVertexBufferObjects();
-	CreateParticle(1000);
+	CreateLecture3Particle(5);
 
 	// Initialize camera settings
 	cameraPositions = glm::vec3(0.f, 0.f, 1000.f);
@@ -228,7 +236,7 @@ void Renderer::CreateVertexBufferObjects()
 	vbQuadParticle.Attach(&lecture3part_vbo, 1);
 }
 
-void Renderer::CreateParticle(const int count)
+void Renderer::CreateLecture3Particle(const int count)
 {
 	const int vertexCount = count * 3 * 2;
 
@@ -237,7 +245,7 @@ void Renderer::CreateParticle(const int count)
 	float* particleVertices = new float[floatCount];
 
 	int index = 0;
-	float particleSize = 0.01f;
+	float particleSize = 0.1f;
 	float randomValueX = 0.f;
 	float randomValueY = 0.f;
 	float randomValueZ = 0.f;
@@ -249,14 +257,14 @@ void Renderer::CreateParticle(const int count)
 
 	for (int i = 0; i < count; i++)
 	{
-		randomValueX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
-		randomValueY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueX = 0.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		randomValueY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
 		randomValueZ = 0.f;
-		randomValueVX = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
-		randomValueVY = ((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueVX = 1.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
+		randomValueVY = 0.f; //((float)rand() / (float)RAND_MAX - 0.5f) * 2.f; //-1~1
 		randomValueVZ = 0.f;
-		randomTimeEmit = ((float)rand() / (float)RAND_MAX) * 5.0f; // 0~5
-		randomTimeDuration = ((float)rand() / (float)RAND_MAX) * 2.0f; // 0~5
+		randomTimeEmit = 0.f; //((float)rand() / (float)RAND_MAX) * 2.0f; // 0~2
+		randomTimeDuration = 1.f; //((float)rand() / (float)RAND_MAX) * 4.0f; // 0~4
 
 		//v0
 		//Position XYZ
