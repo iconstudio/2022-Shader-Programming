@@ -10,6 +10,11 @@
 
 float Time = 0.0f;
 
+std::random_device Random_Seed{};
+std::default_random_engine Random_Engine{ Random_Seed() };
+std::uniform_real<float> Random_Distribution{ 0.0f };
+std::uniform_real<float> Random_NegDistribution{ -1.0f, 1.0f };
+
 Renderer::Renderer(int width, int height)
 	: plSolidRect(), plLecture2(), plLecture3(), plLecture3Particle()
 	, vbSolidRect()
@@ -62,8 +67,8 @@ void Renderer::Lecture3Particle()
 	pipeline.UseBuffer(vbQuadParticle, GL_ARRAY_BUFFER);
 
 	// 정보 11개
-	// (x, y, z, sx, sy, sz, et, lt, amp, period, value)
-	constexpr GLsizei stride = sizeof(float) * 11;
+	// (x, y, z, sx, sy, sz, et, lt, amp, period, sphere, r, g, b, a)
+	constexpr GLsizei stride = sizeof(float) * 15;
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
@@ -98,6 +103,11 @@ void Renderer::Lecture3Particle()
 	attrSphere.EnableVertexArray();
 	// 11번째 부터 읽기
 	attrSphere.Stream(GL_FLOAT, 1, stride, (GLvoid*)(sizeof(float) * 10));
+
+	auto attrColor = pipeline.GetAttribute("a_Colour");
+	attrColor.EnableVertexArray();
+	// 12번째 부터 읽기
+	attrColor.Stream(GL_FLOAT, 4, stride, (GLvoid*)(sizeof(float) * 11));
 
 	auto uniformTime = pipeline.GetUniform("u_Time");
 	uniformTime.Stream(Time);
@@ -259,45 +269,56 @@ void Renderer::CreateLecture3Particle(const int count)
 {
 	const int vertexCount = count * 3 * 2; // 정점 3개 * 삼각형 2개
 
-	// (x, y, z, sx, sy, sz, et, lt, amp, period, uniqe_value)
-	const int floatCount = vertexCount * (3 + 3 + 2 + 2 + 1);
+	// (x, y, z, sx, sy, sz, et, lt, amp, period, sphere, r, g, b, a)
+	const int floatCount = vertexCount * (3 + 3 + 2 + 2 + 1 + 4);
 	float* particleVertices = new float[floatCount];
 
 	int index = 0;
 	float particleSize = 0.01f;
-	float randomValueX = 0.f;
-	float randomValueY = 0.f;
-	float randomValueZ = 0.f;
+	float randomValueX = 0.0f;
+	float randomValueY = 0.0f;
+	float randomValueZ = 0.0f;
 
-	float randomValueVX = 0.f;
-	float randomValueVY = 0.f;
-	float randomValueVZ = 0.f;
+	float randomValueVX = 0.0f;
+	float randomValueVY = 0.0f;
+	float randomValueVZ = 0.0f;
 
-	float randomTimeEmit = 0.f;
-	float randomTimeDuration = 0.f;
+	float randomTimeEmit = 0.0f;
+	float randomTimeDuration = 0.0f;
 
-	float randomCurveAmplify = 0.f;
-	float randomCurvePeriod = 0.f;
+	float randomCurveAmplify = 0.0f;
+	float randomCurvePeriod = 0.0f;
 
-	float randomUniqueValue = 0.f;
+	float randomSphere = 0.0f;
+
+	float randomR = 0.0f;
+	float randomG = 0.0f;
+	float randomB = 0.0f;
+	float randomA = 0.0f;
+
 
 	for (int i = 0; i < count; i++)
 	{
-		randomValueX = 0.f;//((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
-		randomValueY = 0.f;//((float)rand() / (float)RAND_MAX - 0.5f) * 2.f;
+		randomValueX = 0.f;
+		randomValueY = 0.f;
 		randomValueZ = 0.f;
 
-		randomValueVX = ((float)rand() / (float)RAND_MAX - 0.5f) * 0.1f; //-1~1
-		randomValueVY = ((float)rand() / (float)RAND_MAX - 0.5f) * 0.1f; //-1~1
-		randomValueVZ = 0.f;
+		randomValueVX = Random_NegDistribution(Random_Engine) * 0.4f;
+		randomValueVY = Random_NegDistribution(Random_Engine) * 0.4f;
+		randomValueVZ = 0.0f;
 
-		randomTimeEmit = ((float)rand() / (float)RAND_MAX) * 3.0f; // 0~2
-		randomTimeDuration = ((float)rand() / (float)RAND_MAX) * 4.0f; // 0~4
+		randomTimeEmit = Random_Distribution(Random_Engine) * 3.0f;
+		randomTimeDuration = Random_Distribution(Random_Engine) * 4.0f;
 
-		randomCurveAmplify = ((float)rand() / (float)RAND_MAX) * 0.2f - 0.1f; // 0~4
-		randomCurvePeriod = ((float)rand() / (float)RAND_MAX) * 2.0f; // 0~2
+		randomCurveAmplify = Random_NegDistribution(Random_Engine) * 0.12f;
+		randomCurvePeriod = Random_Distribution(Random_Engine) * 2.0f;
 
-		randomUniqueValue = ((float)rand() / (float)RAND_MAX) * 1.0f; // 0~2
+		randomSphere = Random_Distribution(Random_Engine) * 1.0f;
+
+		randomR = Random_Distribution(Random_Engine) * 1.0f;
+		randomG = Random_Distribution(Random_Engine) * 1.0f;
+		randomB = Random_Distribution(Random_Engine) * 1.0f;
+		randomA = Random_Distribution(Random_Engine) * 1.0f;
 
 		// v0
 		// Position XYZ
@@ -315,7 +336,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 
 		// v1
 		particleVertices[index++] = particleSize / 2.f + randomValueX;
@@ -332,7 +358,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 
 		// v2
 		particleVertices[index++] = particleSize / 2.f + randomValueX;
@@ -349,7 +380,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 
 		//v3
 		particleVertices[index++] = -particleSize / 2.f + randomValueX;
@@ -366,7 +402,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 
 		// v4
 		particleVertices[index++] = particleSize / 2.f + randomValueX;
@@ -383,7 +424,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 
 		// v5
 		particleVertices[index++] = -particleSize / 2.f + randomValueX;
@@ -400,7 +446,12 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomCurveAmplify;
 		particleVertices[index++] = randomCurvePeriod;
 		// 
-		particleVertices[index++] = randomUniqueValue;
+		particleVertices[index++] = randomSphere;
+		// RGBA
+		particleVertices[index++] = randomR;
+		particleVertices[index++] = randomG;
+		particleVertices[index++] = randomB;
+		particleVertices[index++] = randomA;
 	}
 
 	vbQuadParticle.Assign(GL_ARRAY_BUFFER, 1);
