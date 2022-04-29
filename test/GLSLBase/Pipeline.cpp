@@ -41,21 +41,21 @@ void Pipeline::LoadShaders(const Path& vs, const Path& fs)
 	auto fn_frag = vs.filename();
 	shFragment = std::make_shared<Shader>(GL_FRAGMENT_SHADER, fs);
 
-	std::cout << "조각 쉐이더 불러오는 중: " << fn_vertex << "\n";
+	std::cout << "조각 쉐이더 불러오는 중: " << fn_frag << "\n";
 	if (!shFragment->Load())
 	{
-		std::cout << "조각 쉐이더 " << fn_vertex << "를 불러오는 중에 오류 발생!\n";
+		std::cout << "조각 쉐이더 " << fn_frag << "를 불러오는 중에 오류 발생!\n";
 		return;
 	}
-	std::cout << "조각 쉐이더 " << fn_vertex << " 불러오기 완료.\n";
+	std::cout << "조각 쉐이더 " << fn_frag << " 불러오기 완료.\n";
 
-	std::cout << "조각 쉐이더 컴파일 중: " << fn_vertex << "\n";
+	std::cout << "조각 쉐이더 컴파일 중: " << fn_frag << "\n";
 	if (!shFragment->Compile())
 	{
-		std::cout << "조각 쉐이더 " << fn_vertex << "를 컴파일하는 중에 오류 발생!\n";
+		std::cout << "조각 쉐이더 " << fn_frag << "를 컴파일하는 중에 오류 발생!\n";
 		return;
 	}
-	std::cout << "조각 쉐이더 " << fn_vertex << "의 컴파일 완료.\n";
+	std::cout << "조각 쉐이더 " << fn_frag << "의 컴파일 완료.\n";
 
 	AttachShader(*shVertex);
 	AttachShader(*shFragment);

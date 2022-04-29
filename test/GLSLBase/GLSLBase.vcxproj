@@ -197,6 +197,8 @@
     <Text Include="Shaders\Lecture3Particle.vs">
       <FileType>Document</FileType>
     </Text>
+    <None Include="Shaders\Lecture4Sandbox.fs" />
+    <None Include="Shaders\Lecture4Sandbox.vs" />
     <None Include="Shaders\MyParticle.fs" />
     <None Include="Shaders\MyParticle.vs" />
     <None Include="Shaders\SolidRect.fs" />

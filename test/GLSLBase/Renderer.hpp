@@ -29,7 +29,7 @@ public:
 	void Test();
 	void Lecture3();
 	void Lecture3Particle();
-	void MyParticle();
+	void Lecture4();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
@@ -62,11 +62,13 @@ private:
 	Pipeline plSolidRect;
 	Pipeline plLecture2;
 	Pipeline plLecture3, plLecture3Particle;
+	Pipeline plLecture4;
 
 	VertexObjet vbSolidRect;
 	VertexObjet vbLecture2;
 	VertexObjet vbLecture3;
 	VertexObjet vbQuadParticle;
 	GLuint countParticleVertex = 0;
+	VertexObjet vbQuadLecture4;
 };
 

@@ -22,7 +22,7 @@ void RenderScene(void)
 
 	//  파이프라인
 	// MyParticle
-	g_Renderer->Lecture3Particle();
+	g_Renderer->Lecture4();
 
 	glutSwapBuffers();
 }

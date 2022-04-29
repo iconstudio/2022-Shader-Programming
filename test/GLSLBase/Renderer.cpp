@@ -16,10 +16,11 @@ std::uniform_real<float> Random_Distribution{ 0.0f };
 std::uniform_real<float> Random_NegDistribution{ -1.0f, 1.0f };
 
 Renderer::Renderer(int width, int height)
-	: plSolidRect(), plLecture2(), plLecture3(), plLecture3Particle()
+	: plSolidRect(), plLecture2(), plLecture3(), plLecture3Particle(), plLecture4()
 	, vbSolidRect()
 	, vbLecture2()
 	, vbLecture3(), vbQuadParticle()
+	, vbQuadLecture4()
 {
 	glClearDepth(1.f);
 
@@ -130,9 +131,22 @@ void Renderer::Lecture3Particle()
 	attrVelocity.DisableVertexArray();
 }
 
-void Renderer::MyParticle()
+void Renderer::Lecture4()
 {
+	auto& pipeline = plLecture4;
+	pipeline.Use();
+	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
 
+	// 여기서 stride 값은 사실 0이어도 된다.
+	GLsizei stride = sizeof(float) * 7;
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+	attrPosition.Stream(GL_FLOAT, 3, stride);
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
+
+	attrPosition.DisableVertexArray();
 }
 
 void Renderer::Test()
@@ -164,18 +178,21 @@ void Renderer::Initialize(int width, int height)
 	plLecture2.AssignProgram(CreatePipeline());
 	plLecture3.AssignProgram(CreatePipeline());
 	plLecture3Particle.AssignProgram(CreatePipeline());
+	plLecture4.AssignProgram(CreatePipeline());
 
 	// Load shaders
 	plSolidRect.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	plLecture2.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	plLecture3.LoadShaders("./Shaders/Lecture3.vs", "./Shaders/Lecture3.fs");
 	plLecture3Particle.LoadShaders("./Shaders/Lecture3Particle.vs", "./Shaders/Lecture3Particle.fs");
+	plLecture4.LoadShaders("./Shaders/Lecture4Sandbox.vs", "./Shaders/Lecture4Sandbox.fs");
 
 	// Ready
 	plSolidRect.Readymade();
 	plLecture2.Readymade();
 	plLecture3.Readymade();
 	plLecture3Particle.Readymade();
+	plLecture4.Readymade();
 
 	// Create VBOs
 	CreateVertexBufferObjects();
@@ -214,7 +231,7 @@ GLuint Renderer::CreatePipeline()
 
 void Renderer::CreateVertexBufferObjects()
 {
-	float rect[] =
+	constexpr float rect[] =
 	{
 		-0.5f, -0.5f, 0.0f,
 		-0.5f,  0.5f, 0.0f,
@@ -228,7 +245,7 @@ void Renderer::CreateVertexBufferObjects()
 	rect_vbo.Bind(rect, sizeof(rect), GL_STATIC_DRAW);
 	vbSolidRect.Attach(&rect_vbo, 1);
 
-	float rect_lecture2[] =
+	constexpr float rect_lecture2[] =
 	{
 		-0.5f, -0.5f, 0.0f,
 		-0.5f, 0.5f, 0.0f,
@@ -238,7 +255,7 @@ void Renderer::CreateVertexBufferObjects()
 	lecture2_vbo.Bind(rect_lecture2, sizeof(rect_lecture2), GL_STATIC_DRAW);
 	vbLecture2.Attach(&lecture2_vbo, 1);
 
-	float rect_lecture3[] =
+	constexpr float rect_lecture3[] =
 	{
 		0.0f, 0.0f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f,
 		1.0f, 1.0f, 0.0f,	0.0f, 1.0f, 0.0f, 1.0f,
@@ -248,8 +265,8 @@ void Renderer::CreateVertexBufferObjects()
 	lecture3_vbo.Bind(rect_lecture3, sizeof(rect_lecture3), GL_STATIC_DRAW);
 	vbLecture3.Attach(&lecture3_vbo, 1);
 
-	float part_size = 0.1f;
-	float rect_lecture3part[] =
+	constexpr float part_size = 0.1f;
+	constexpr float rect_lecture3part[] =
 	{
 		// 왼쪽 위 삼각형
 		-part_size, -part_size, 0.0f,//	1.0f, 1.0f, 1.0f, 1.0f,
@@ -263,6 +280,24 @@ void Renderer::CreateVertexBufferObjects()
 	VertexBuffer lecture3part_vbo(GL_ARRAY_BUFFER);
 	lecture3part_vbo.Bind(rect_lecture3part, sizeof(rect_lecture3part), GL_STATIC_DRAW);
 	vbQuadParticle.Attach(&lecture3part_vbo, 1);
+
+	constexpr float rect_lecture4_sz = 0.5f;
+	// (x, y, z, r, g, b, a)
+	constexpr float rect_lecture4[] =
+	{
+		// Triangle1
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_vbo(GL_ARRAY_BUFFER);
+	lecture4_vbo.Bind(rect_lecture4, sizeof(rect_lecture4), GL_STATIC_DRAW);
+	vbQuadLecture4.Attach(&lecture4_vbo, 1);
 }
 
 void Renderer::CreateLecture3Particle(const int count)
@@ -295,7 +330,6 @@ void Renderer::CreateLecture3Particle(const int count)
 	float randomG = 0.0f;
 	float randomB = 0.0f;
 	float randomA = 0.0f;
-
 
 	for (int i = 0; i < count; i++)
 	{

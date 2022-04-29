@@ -90,6 +90,12 @@
     <None Include="Shaders\MyParticle.vs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shaders\Lecture4Sandbox.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Lecture4Sandbox.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
