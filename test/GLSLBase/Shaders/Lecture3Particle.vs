@@ -16,6 +16,7 @@ uniform float u_Time;
 uniform vec3 u_Acceleration;
 uniform bool u_Loop;
 
+out vec2 v_TexCoord;
 out vec4 v_Colour;
 
 const float g_PI = 3.141592;
@@ -59,5 +60,6 @@ void main()
 		out_position.z = 0f;
 	}
 
+	v_TexCoord = out_position;
 	gl_Position = vec4(out_position, 1);
 }
