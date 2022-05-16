@@ -4,6 +4,7 @@ layout(location=0) out vec4 FragColor;
 
 in vec3 v_Position;
 in vec4 v_Colour;
+in vec2 v_TexCoord;
 
 vec4 DrawEdgedCircle(float outer_radius, float thickness);
 
