@@ -6,7 +6,11 @@ in vec3 v_Position;
 in vec4 v_Colour;
 in vec2 v_TexCoord;
 
-vec4 DrawEdgedCircle(float outer_radius, float thickness);
+const float g_PI = 3.141592f;
+
+vec4 CrossPattern();
+vec4 DrawEdgedCircle(vec2 pos, float outer_radius, float thickness);
+vec4 DrawDuplicatedCircle(vec2 pos, int count, float range);
 
 void main()
 {
@@ -25,15 +29,36 @@ void main()
 	//float smoothness = 0.02f;
 	//circle_color = vec4(vec3(smoothstep(radius, radius - smoothness, 0.39f)), 1.0f);
 
-	circle_color = DrawEdgedCircle(0.4f, 0.02f);
-	FragColor = v_Colour * circle_color;
+	//circle_color = DrawEdgedCircle(v_Position.xy, 0.4f, 0.02f);
+	//FragColor = v_Colour * circle_color;
+
+	//FragColor = CrossPattern();
+
+	FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
 }
 
-vec4 DrawEdgedCircle(float outer_radius, float thickness)
+vec4 CrossPattern()
+{
+	int count = 10;
+	float interpolation = g_PI * 0.5f;
+
+	float xaxis = sin(count * (v_Colour.x * 2.0f * g_PI) + interpolation);
+	float yaxis = sin(count * (v_Colour.y * 2.0f * g_PI) + interpolation);
+	return vec4(max(xaxis, yaxis));
+}
+
+vec4 DrawEdgedCircle(vec2 pos, float outer_radius, float thickness)
 {
 	float inner_radius = outer_radius - thickness;
 
-	float radius = distance(v_Position.xy, vec2(0.0f));
+	float radius = distance(pos, vec2(0.0f));
 
 	return vec4(vec3(smoothstep(inner_radius, outer_radius, radius)), 1.0f);
+}
+
+vec4 DrawDuplicatedCircle(vec2 pos, int count, float range)
+{
+	float interpolation = g_PI * 0.5f;
+	float dist = distance(pos, vec2(range));
+	return vec4(sin(count * (dist * 4 * g_PI))); // ½ÃÇè!!!!!
 }

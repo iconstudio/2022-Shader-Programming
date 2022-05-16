@@ -141,7 +141,6 @@ void Renderer::Lecture4()
 	pipeline.Use();
 	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
 
-	// 여기서 stride 값은 사실 0이어도 된다.
 	GLsizei stride = sizeof(float) * 7;
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
