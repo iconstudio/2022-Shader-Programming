@@ -23,7 +23,6 @@ public:
 	template<>
 	void Stream<bool>(const bool arg0) const;
 
-private:
 	GLint Self;
 };
 

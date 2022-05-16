@@ -6,11 +6,14 @@ in vec3 v_Position;
 in vec4 v_Colour;
 in vec2 v_TexCoord;
 
+uniform vec3 u_Points[10];
+
 const float g_PI = 3.141592f;
 
 vec4 CrossPattern();
 vec4 DrawEdgedCircle(vec2 pos, float outer_radius, float thickness);
 vec4 DrawDuplicatedCircle(vec2 pos, int count, float range);
+vec4 DrawCircle(vec3 point);
 
 void main()
 {
@@ -34,7 +37,9 @@ void main()
 
 	//FragColor = CrossPattern();
 
-	FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
+	//FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
+
+	FragColor = DrawCircle(u_Points, v_Colour.xy);
 }
 
 vec4 CrossPattern()
@@ -61,4 +66,18 @@ vec4 DrawDuplicatedCircle(vec2 pos, int count, float range)
 	float interpolation = g_PI * 0.5f;
 	float dist = distance(pos, vec2(range));
 	return vec4(sin(count * (dist * 4 * g_PI))); // ½ÃÇè!!!!!
+}
+
+vec4 DrawCircle(vec2 point, vec2 centre)
+{
+	float dist = distance(point, centre);
+	vec4 circle_color = vec4(0.0f);
+	if (radius < 0.4f)
+	{
+		return vec4(1.0f);
+	}
+	else
+	{
+		return vec4(0.0f);
+	}
 }

@@ -147,7 +147,30 @@ void Renderer::Lecture4()
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
-	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
+	auto uniformPoints = pipeline.GetUniform("u_Points");
+	glUniform3fv(uniformPoints.Self, 10, ptLecture4);
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
+
+	attrPosition.DisableVertexArray();
+}
+
+void Renderer::Lecture4Raindrop()
+{
+	auto& pipeline = plLecture4;
+	pipeline.Use();
+	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
+
+	GLsizei stride = sizeof(float) * 3;
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+	attrPosition.Stream(GL_FLOAT, 3, stride);
+
+	auto uniformPoints = pipeline.GetUniform("u_Points");
+	glUniform3fv(uniformPoints.Self, 10, ptLecture4);
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
 
 	attrPosition.DisableVertexArray();
 }
@@ -500,6 +523,13 @@ void Renderer::CreateLecture3Particle(const int count)
 	countParticleVertex = vertexCount;
 
 	delete[] particleVertices;
+}
+
+void Renderer::CreateLecture4Objects()
+{
+	ptLecture4 = new float[] {
+		0.4f, 0.6f, 0.0f
+	};
 }
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)

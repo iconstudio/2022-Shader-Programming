@@ -30,6 +30,7 @@ public:
 	void Lecture3();
 	void Lecture3Particle();
 	void Lecture4();
+	void Lecture4Raindrop();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
@@ -38,8 +39,10 @@ private:
 	void Initialize(int width, int height);
 
 	GLuint CreatePipeline();
+
 	void CreateVertexBufferObjects();
 	void CreateLecture3Particle(const int count);
+	void CreateLecture4Objects();
 
 	void Render(PRIMITIVE_METHODS method, GLint first, GLsizei count);
 
@@ -70,5 +73,7 @@ private:
 	VertexObjet vbQuadParticle;
 	GLuint countParticleVertex = 0;
 	VertexObjet vbQuadLecture4;
+
+	float *ptLecture4; // (x, y, z) * 10°³
 };
 
