@@ -67,6 +67,9 @@ void Renderer::Lecture3Particle()
 	pipeline.Use();
 	pipeline.UseBuffer(vbQuadParticle, GL_ARRAY_BUFFER);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// 정보 11개
 	// (x, y, z, sx, sy, sz, et, lt, amp, period, sphere, r, g, b, a)
 	constexpr GLsizei stride = sizeof(float) * 15;
@@ -114,7 +117,7 @@ void Renderer::Lecture3Particle()
 	uniformTime.Stream(Time);
 
 	auto uniformAccel = pipeline.GetUniform("u_Acceleration");
-	uniformAccel.Stream(0.0f, 0.0f, 0.0f); // std::cos(Time)
+	uniformAccel.Stream(0.0f, 1.0f, 0.0f); // std::cos(Time)
 
 	auto uniformLoop = pipeline.GetUniform("u_Loop");
 	uniformLoop.Stream(true);
@@ -129,6 +132,7 @@ void Renderer::Lecture3Particle()
 
 	attrPosition.DisableVertexArray();
 	attrVelocity.DisableVertexArray();
+	glDisable(GL_BLEND);
 }
 
 void Renderer::Lecture4()
@@ -254,7 +258,7 @@ void Renderer::CreateVertexBufferObjects()
 	VertexBuffer lecture2_vbo(GL_ARRAY_BUFFER);
 	lecture2_vbo.Bind(rect_lecture2, sizeof(rect_lecture2), GL_STATIC_DRAW);
 	vbLecture2.Attach(&lecture2_vbo, 1);
-
+	
 	constexpr float rect_lecture3[] =
 	{
 		0.0f, 0.0f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f,
@@ -265,7 +269,7 @@ void Renderer::CreateVertexBufferObjects()
 	lecture3_vbo.Bind(rect_lecture3, sizeof(rect_lecture3), GL_STATIC_DRAW);
 	vbLecture3.Attach(&lecture3_vbo, 1);
 
-	constexpr float part_size = 0.1f;
+	constexpr float part_size = 1.0f;
 	constexpr float rect_lecture3part[] =
 	{
 		// 왼쪽 위 삼각형
@@ -309,7 +313,9 @@ void Renderer::CreateLecture3Particle(const int count)
 	float* particleVertices = new float[floatCount];
 
 	int index = 0;
-	float particleSize = 0.01f;
+
+	// 반지름
+	float particleSize = 0.1f;
 	float randomValueX = 0.0f;
 	float randomValueY = 0.0f;
 	float randomValueZ = 0.0f;
@@ -338,7 +344,7 @@ void Renderer::CreateLecture3Particle(const int count)
 		randomValueZ = 0.f;
 
 		randomValueVX = Random_NegDistribution(Random_Engine) * 0.4f;
-		randomValueVY = Random_NegDistribution(Random_Engine) * 0.4f;
+		randomValueVY = Random_NegDistribution(Random_Engine) * 0.5f;
 		randomValueVZ = 0.0f;
 
 		randomTimeEmit = Random_Distribution(Random_Engine) * 3.0f;
@@ -356,8 +362,8 @@ void Renderer::CreateLecture3Particle(const int count)
 
 		// v0
 		// Position XYZ
-		particleVertices[index++] = -particleSize / 2.f + randomValueX;
-		particleVertices[index++] = -particleSize / 2.f + randomValueY;
+		particleVertices[index++] = -particleSize + randomValueX;
+		particleVertices[index++] = -particleSize + randomValueY;
 		particleVertices[index++] = 0.1f;
 		// Velocity XYZ
 		particleVertices[index++] = randomValueVX;
@@ -378,8 +384,8 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomA;
 
 		// v1
-		particleVertices[index++] = particleSize / 2.f + randomValueX;
-		particleVertices[index++] = -particleSize / 2.f + randomValueY;
+		particleVertices[index++] = particleSize + randomValueX;
+		particleVertices[index++] = -particleSize + randomValueY;
 		particleVertices[index++] = 0.f;
 		// Velocity XYZ
 		particleVertices[index++] = randomValueVX;
@@ -400,8 +406,8 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomA;
 
 		// v2
-		particleVertices[index++] = particleSize / 2.f + randomValueX;
-		particleVertices[index++] = particleSize / 2.f + randomValueY;
+		particleVertices[index++] = particleSize + randomValueX;
+		particleVertices[index++] = particleSize + randomValueY;
 		particleVertices[index++] = 0.f;
 		// Velocity XYZ
 		particleVertices[index++] = randomValueVX;
@@ -422,8 +428,8 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomA;
 
 		//v3
-		particleVertices[index++] = -particleSize / 2.f + randomValueX;
-		particleVertices[index++] = -particleSize / 2.f + randomValueY;
+		particleVertices[index++] = -particleSize + randomValueX;
+		particleVertices[index++] = -particleSize + randomValueY;
 		particleVertices[index++] = 0.f;
 		//Velocity XYZ
 		particleVertices[index++] = randomValueVX;
@@ -444,8 +450,8 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomA;
 
 		// v4
-		particleVertices[index++] = particleSize / 2.f + randomValueX;
-		particleVertices[index++] = particleSize / 2.f + randomValueY;
+		particleVertices[index++] = particleSize + randomValueX;
+		particleVertices[index++] = particleSize + randomValueY;
 		particleVertices[index++] = 0.f;
 		// Velocity XYZ
 		particleVertices[index++] = randomValueVX;
@@ -466,8 +472,8 @@ void Renderer::CreateLecture3Particle(const int count)
 		particleVertices[index++] = randomA;
 
 		// v5
-		particleVertices[index++] = -particleSize / 2.f + randomValueX;
-		particleVertices[index++] = particleSize / 2.f + randomValueY;
+		particleVertices[index++] = -particleSize + randomValueX;
+		particleVertices[index++] = particleSize + randomValueY;
 		particleVertices[index++] = 0.f;
 		//Velocity XYZ
 		particleVertices[index++] = randomValueVX;

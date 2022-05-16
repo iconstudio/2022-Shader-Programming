@@ -60,6 +60,6 @@ void main()
 		out_position.z = 0f;
 	}
 
-	v_TexCoord = out_position.xy;
+	v_TexCoord = a_Position.xy;
 	gl_Position = vec4(out_position, 1);
 }
