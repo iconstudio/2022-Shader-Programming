@@ -15,6 +15,8 @@ vec4 DrawEdgedCircle(vec2 pos, float outer_radius, float thickness);
 vec4 DrawDuplicatedCircle(vec2 pos, int count, float range);
 vec4 DrawCircle(vec3 point);
 
+void DrawRader();
+
 void main()
 {
 	vec2 circle_surface = v_Position.xy;
@@ -37,9 +39,9 @@ void main()
 
 	//FragColor = CrossPattern();
 
-	//FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
+	FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
 
-	FragColor = DrawCircle(u_Points, v_Colour.xy);
+	//FragColor = DrawCircle(u_Points, v_Colour.xy);
 }
 
 vec4 CrossPattern()
@@ -72,7 +74,7 @@ vec4 DrawCircle(vec2 point, vec2 centre)
 {
 	float dist = distance(point, centre);
 	vec4 circle_color = vec4(0.0f);
-	if (radius < 0.4f)
+	if (dist < 0.4f)
 	{
 		return vec4(1.0f);
 	}

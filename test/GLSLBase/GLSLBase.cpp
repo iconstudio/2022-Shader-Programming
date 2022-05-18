@@ -23,8 +23,8 @@ void RenderScene(void)
 	//  파이프라인
 	// MyParticle
 	//g_Renderer->Lecture4();
-	g_Renderer->Lecture4Raindrop();
-
+	//g_Renderer->Lecture4Raindrop();
+	g_Renderer->Lecture4RaderCircle();
 
 	glutSwapBuffers();
 }

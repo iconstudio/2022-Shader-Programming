@@ -175,6 +175,23 @@ void Renderer::Lecture4Raindrop()
 	attrPosition.DisableVertexArray();
 }
 
+void Renderer::Lecture4RaderCircle()
+{
+	auto& pipeline = plLecture4;
+	pipeline.Use();
+	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
+
+	GLsizei stride = sizeof(float) * 7;
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+	attrPosition.Stream(GL_FLOAT, 3, stride);
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
+
+	attrPosition.DisableVertexArray();
+}
+
 void Renderer::Test()
 {
 	auto& pipeline = plSolidRect;

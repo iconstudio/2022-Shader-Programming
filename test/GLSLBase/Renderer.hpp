@@ -31,6 +31,7 @@ public:
 	void Lecture3Particle();
 	void Lecture4();
 	void Lecture4Raindrop();
+	void Lecture4RaderCircle();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
