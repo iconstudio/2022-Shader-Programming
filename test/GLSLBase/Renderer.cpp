@@ -201,7 +201,7 @@ void Renderer::Lecture4Raindrop()
 
 	auto uniformTime = pipeline.GetUniform("u_Time");
 	uniformTime.Stream(Time);
-	Time += 0.01f;
+	Time += 0.001f;
 
 	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 

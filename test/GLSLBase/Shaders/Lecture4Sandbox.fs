@@ -76,15 +76,18 @@ vec4 DrawCircle(vec2 point, vec2 centre)
 	}
 }
 
+// 시험!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// 제대로 된 물결 파동을 만들어라!!!!!!!!!!!!!!
 vec4 DrawCircles(vec2 centre)
 {
 	vec4 result = vec4(0.0f);
 	for (int i = 0; i < 10; i++)
 	{
 		float dist = distance(u_Points[i].xy, centre);
-		//if (dist < 1.1f)
+		if (dist < u_Time)
 		{
-			result += DrawDuplicatedCircle(u_Points[i].xy, centre, 10);
+			result += vec4(sin(-u_Time * 100 + 10 * (dist * 4 * g_PI)));
+			//DrawDuplicatedCircle(u_Points[i].xy, centre, 10);
 			//vec4(1.0f);
 		}
 	}
