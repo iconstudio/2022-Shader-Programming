@@ -16,7 +16,7 @@ vec4 DrawEdgedCircle(vec2 pos, float outer_radius, float thickness);
 vec4 DrawDuplicatedCircle(vec2 centre, vec2 pos, int count);
 vec4 DrawCircle(vec2 point, vec2 centre);
 vec4 DrawCircles(vec2 centre);
-vec4 DrawRader();
+vec4 DrawRaderCirle(vec2 centre, vec2 pos);
 
 void main()
 {
@@ -30,11 +30,13 @@ void main()
 	//FragColor = DrawDuplicatedCircle(v_Colour.xy, 10, 0.0f);
 	//FragColor = DrawCircle(u_Points, v_Colour.xy);
 
-	FragColor = DrawCircles(v_Colour.xy);
+	//FragColor = DrawCircles(v_Colour.xy);
 	//FragColor = DrawCircle(u_Points[1].xy, v_Colour.xy);
 	//FragColor += DrawCircle(u_Points[2].xy, v_Colour.xy);
 	//FragColor += DrawCircle(u_Points[3].xy, v_Colour.xy);
 	//FragColor += DrawCircle(u_Points[4].xy , v_Colour.xy);
+
+	FragColor = DrawRaderCirle(vec2(0.5f, 0.0f), v_Colour.xy);
 }
 
 vec4 CrossPattern()
@@ -96,4 +98,28 @@ vec4 DrawCircles(vec2 centre)
 		}
 	}
 	return result;
+}
+
+// ½ÃÇè!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// ´õ ¸ÚÁö°Ô Æ©´×ÇØºÁ¶ó
+vec4 DrawRaderCirle(vec2 centre, vec2 pos)
+{
+	float rader_dist = distance(centre, pos);
+	float rader_factor = (rader_dist * 2 * g_PI) - u_Time * 10;
+
+	int count = 2;
+	float rader_sin_value = sin(count * rader_factor);
+	float wave = pow(rader_sin_value, 16);
+
+	for (int i = 0; i < 10; i++)
+	{
+		float dist = distance(u_Points[i].xy, pos);
+		float factor = (dist * 2 * g_PI);
+		float sin_value = sin(count * factor);
+		sin_value = clamp(sin_value, 0.0f, 1.0f);
+		
+		wave += sin_value * 0.2f;
+	}
+
+	return vec4(wave);
 }

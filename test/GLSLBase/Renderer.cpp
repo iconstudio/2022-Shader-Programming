@@ -220,6 +220,13 @@ void Renderer::Lecture4RaderCircle()
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
+	auto uniformPoints = pipeline.GetUniform("u_Points");
+	glUniform3fv(uniformPoints.Self, 10, g_ptLecture4);
+
+	auto uniformTime = pipeline.GetUniform("u_Time");
+	uniformTime.Stream(Time);
+	Time += 0.001f;
+
 	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
 	attrPosition.DisableVertexArray();
@@ -360,7 +367,7 @@ void Renderer::CreateVertexBufferObjects()
 	lecture3part_vbo.Bind(rect_lecture3part, sizeof(rect_lecture3part), GL_STATIC_DRAW);
 	vbQuadParticle.Attach(&lecture3part_vbo, 1);
 
-	constexpr float rect_lecture4_sz = 1.0f;
+	constexpr float rect_lecture4_sz = 0.6f;
 	// (x, y, z, r, g, b, a)
 	constexpr float rect_lecture4[] =
 	{
