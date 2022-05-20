@@ -75,6 +75,6 @@ private:
 	GLuint countParticleVertex = 0;
 	VertexObjet vbQuadLecture4;
 
-	float *ptLecture4; // (x, y, z) * 10°³
+	float ptLecture4[30]; // (x, y, z) * 10°³
 };
 

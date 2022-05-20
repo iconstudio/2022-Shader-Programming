@@ -9,10 +9,9 @@
 #include "LoadPng.h"
 
 float Time = 0.0f;
-
 std::random_device Random_Seed{};
 std::default_random_engine Random_Engine{ Random_Seed() };
-std::uniform_real<float> Random_Distribution{ 0.0f };
+std::uniform_real<float> Random_Distribution{ 0.0f, 1.0f };
 std::uniform_real<float> Random_NegDistribution{ -1.0f, 1.0f };
 
 Renderer::Renderer(int width, int height)
@@ -147,13 +146,43 @@ void Renderer::Lecture4()
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
-	auto uniformPoints = pipeline.GetUniform("u_Points");
-	glUniform3fv(uniformPoints.Self, 10, ptLecture4);
-
-	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
 	attrPosition.DisableVertexArray();
 }
+
+const float g_ptLecture4[] = {
+	Random_Distribution(Random_Engine) - 0.5f
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+		, Random_Distribution(Random_Engine)
+		, Random_Distribution(Random_Engine)
+		, 0.01f
+};
 
 void Renderer::Lecture4Raindrop()
 {
@@ -161,16 +190,20 @@ void Renderer::Lecture4Raindrop()
 	pipeline.Use();
 	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
 
-	GLsizei stride = sizeof(float) * 3;
+	GLsizei stride = sizeof(float) * 7;
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
 	auto uniformPoints = pipeline.GetUniform("u_Points");
-	glUniform3fv(uniformPoints.Self, 10, ptLecture4);
+	glUniform3fv(uniformPoints.Self, 10, g_ptLecture4);
 
-	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
+	auto uniformTime = pipeline.GetUniform("u_Time");
+	uniformTime.Stream(Time);
+	Time += 0.01f;
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
 	attrPosition.DisableVertexArray();
 }
@@ -187,7 +220,7 @@ void Renderer::Lecture4RaderCircle()
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
 
-	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 3);
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
 	attrPosition.DisableVertexArray();
 }
@@ -240,6 +273,7 @@ void Renderer::Initialize(int width, int height)
 	// Create VBOs
 	CreateVertexBufferObjects();
 	CreateLecture3Particle(1000);
+	CreateLecture4Objects();
 
 	// Initialize camera settings
 	cameraPositions = glm::vec3(0.f, 0.f, 1000.f);
@@ -265,6 +299,8 @@ void Renderer::Initialize(int width, int height)
 
 	//Initialize model transform matrix :; used for rotating quad normal to parallel to camera direction
 	m_m4Model = glm::rotate(glm::mat4(1.0f), glm::radians(0.f), glm::vec3(1.f, 0.f, 0.f));
+
+	std::cout << "초기화 완료" << std::endl;
 }
 
 GLuint Renderer::CreatePipeline()
@@ -297,7 +333,7 @@ void Renderer::CreateVertexBufferObjects()
 	VertexBuffer lecture2_vbo(GL_ARRAY_BUFFER);
 	lecture2_vbo.Bind(rect_lecture2, sizeof(rect_lecture2), GL_STATIC_DRAW);
 	vbLecture2.Attach(&lecture2_vbo, 1);
-	
+
 	constexpr float rect_lecture3[] =
 	{
 		0.0f, 0.0f, 0.0f,	1.0f, 0.0f, 0.0f, 1.0f,
@@ -308,7 +344,7 @@ void Renderer::CreateVertexBufferObjects()
 	lecture3_vbo.Bind(rect_lecture3, sizeof(rect_lecture3), GL_STATIC_DRAW);
 	vbLecture3.Attach(&lecture3_vbo, 1);
 
-	constexpr float part_size = 1.0f;
+	constexpr float part_size = 0.7f;
 	constexpr float rect_lecture3part[] =
 	{
 		// 왼쪽 위 삼각형
@@ -324,12 +360,12 @@ void Renderer::CreateVertexBufferObjects()
 	lecture3part_vbo.Bind(rect_lecture3part, sizeof(rect_lecture3part), GL_STATIC_DRAW);
 	vbQuadParticle.Attach(&lecture3part_vbo, 1);
 
-	constexpr float rect_lecture4_sz = 0.5f;
+	constexpr float rect_lecture4_sz = 1.0f;
 	// (x, y, z, r, g, b, a)
 	constexpr float rect_lecture4[] =
 	{
 		// Triangle1
-		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
@@ -544,9 +580,6 @@ void Renderer::CreateLecture3Particle(const int count)
 
 void Renderer::CreateLecture4Objects()
 {
-	ptLecture4 = new float[] {
-		0.4f, 0.6f, 0.0f
-	};
 }
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)

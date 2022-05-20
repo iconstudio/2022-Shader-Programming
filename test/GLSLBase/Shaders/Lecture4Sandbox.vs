@@ -6,7 +6,7 @@ out vec4 v_Colour; // out
 
 void main()
 {
-	vec3 my_color = a_Position + 0.0f; 
+	vec3 my_color = a_Position + 0.5f; 
 	v_Colour = vec4(my_color, 1f);
 	v_Colour.z = 0f;
 
