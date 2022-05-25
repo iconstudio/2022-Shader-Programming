@@ -24,8 +24,8 @@ void RenderScene(void)
 	// MyParticle
 	//g_Renderer->Lecture4();
 	//g_Renderer->Lecture4Raindrop();
-	//g_Renderer->Lecture4RaderCircle();
-	g_Renderer->Lecture5LineSegment();
+	g_Renderer->Lecture4RaderCircle();
+	//g_Renderer->Lecture5LineSegment();
 
 	glutSwapBuffers();
 }

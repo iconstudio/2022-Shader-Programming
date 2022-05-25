@@ -214,12 +214,13 @@ void Renderer::Lecture4RaderCircle()
 	pipeline.Use();
 
 	// 원본
+	//pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
 	//GLsizei stride = sizeof(float) * 7;
 	//auto attrPosition = pipeline.GetAttribute("a_Position");
 	//attrPosition.EnableVertexArray();
 	//attrPosition.Stream(GL_FLOAT, 3, stride);
 	
-	/*
+	//*
 	//* Package 0
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
@@ -237,9 +238,9 @@ void Renderer::Lecture4RaderCircle()
 	pipeline.UseBuffer(vboPackaged0Color, GL_ARRAY_BUFFER);
 	// 0이어도 된다.
 	GLsizei col_stride = sizeof(float) * 4;
-	attrPosition.Stream(GL_FLOAT, 4, col_stride);
-	*/
-
+	attrColour.Stream(GL_FLOAT, 4, col_stride);
+	//*/
+	
 	/*
 	//* Packge 1
 	// (x, y, z, r, g, b, a)
@@ -254,9 +255,9 @@ void Renderer::Lecture4RaderCircle()
 	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
 	GLsizei col_stride = sizeof(float) * 7;
 	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 3));
-	*/
+	//*/
 
-	//* Packge 2
+	/* Packge 2
 	// (x, y, z, ..., r, g, b, a)
 	pipeline.UseBuffer(vboPackaged2, GL_ARRAY_BUFFER);
 
@@ -273,6 +274,7 @@ void Renderer::Lecture4RaderCircle()
 	GLsizei col_stride = sizeof(float) * 4;
 	// 색상은 맨 뒤로 밀려나있다.
 	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 18));
+	//*/
 
 	auto uniformPoints = pipeline.GetUniform("u_Points");
 	glUniform3fv(uniformPoints.Self, 10, g_ptLecture4);
@@ -647,7 +649,7 @@ void Renderer::CreateLecture3Particle(const int count)
 
 void Renderer::CreateLecture4Objects()
 {
-	constexpr float rect_lecture4_sz = 0.6f;
+	constexpr float rect_lecture4_sz = 0.8f;
 	// (x, y, z, r, g, b, a)
 	constexpr float rect_lecture4[] =
 	{

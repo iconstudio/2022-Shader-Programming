@@ -1,5 +1,6 @@
 #version 450
 attribute vec3 a_Position;
+attribute vec3 a_Colour;
 
 out vec3 v_Position;
 out vec4 v_Colour; // out
