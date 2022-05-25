@@ -33,6 +33,7 @@ public:
 	void Lecture4Raindrop();
 	void Lecture4RaderCircle();
 	void Lecture5LineSegment();
+	void Lecture5Fullfil();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
@@ -70,6 +71,7 @@ private:
 	Pipeline plLecture3, plLecture3Particle;
 	Pipeline plLecture4;
 	Pipeline plLecture5Curve;
+	Pipeline plLecture5Fullfil;
 
 	VertexObjet vbSolidRect;
 	VertexObjet vbLecture2;
@@ -86,6 +88,9 @@ private:
 	VertexObjet vboLecture5LineSegment;
 	GLsizei vboLecture5SegCount;
 
+	VertexObjet vboLecture5Fullfil;
+
 	float ptLecture4[30]; // (x, y, z) * 10°³
+	float ptLecture5[18]; // (x, y, z) * 6°³
 };
 

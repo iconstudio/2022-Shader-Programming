@@ -219,7 +219,7 @@ void Renderer::Lecture4RaderCircle()
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
 	attrPosition.Stream(GL_FLOAT, 3, stride);
-	
+
 	/*
 	//* Package 0
 	auto attrPosition = pipeline.GetAttribute("a_Position");
@@ -240,7 +240,7 @@ void Renderer::Lecture4RaderCircle()
 	GLsizei col_stride = sizeof(float) * 4;
 	attrColour.Stream(GL_FLOAT, 4, col_stride);
 	//*/
-	
+
 	//*
 	/* Packge 1
 	// (x, y, z, r, g, b, a)
@@ -312,6 +312,28 @@ void Renderer::Lecture5LineSegment()
 	attrPosition.DisableVertexArray();
 }
 
+void Renderer::Lecture5Fullfil()
+{
+	auto& pipeline = plLecture5Fullfil;
+	pipeline.Use();
+
+	pipeline.UseBuffer(vboLecture5Fullfil, GL_ARRAY_BUFFER);
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+
+	GLsizei pos_stride = sizeof(float) * 3;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+
+	auto uniformTime = pipeline.GetUniform("u_Time");
+	uniformTime.Stream(Time);
+	Time += 0.01f;
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
+
+	attrPosition.DisableVertexArray();
+}
+
 void Renderer::Test()
 {
 	auto& pipeline = plSolidRect;
@@ -343,6 +365,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture3Particle.AssignProgram(CreatePipeline());
 	plLecture4.AssignProgram(CreatePipeline());
 	plLecture5Curve.AssignProgram(CreatePipeline());
+	plLecture5Fullfil.AssignProgram(CreatePipeline());
 
 	// Load shaders
 	plSolidRect.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
@@ -351,6 +374,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture3Particle.LoadShaders("./Shaders/Lecture3Particle.vs", "./Shaders/Lecture3Particle.fs");
 	plLecture4.LoadShaders("./Shaders/Lecture4Sandbox.vs", "./Shaders/Lecture4Sandbox.fs");
 	plLecture5Curve.LoadShaders("./Shaders/Lecture5Curve.vs", "./Shaders/Lecture5Curve.fs");
+	plLecture5Fullfil.LoadShaders("./Shaders/FullRect.vs", "./Shaders/FullRect.fs");
 
 	// Ready
 	plSolidRect.Readymade();
@@ -359,6 +383,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture3Particle.Readymade();
 	plLecture4.Readymade();
 	plLecture5Curve.Readymade();
+	plLecture5Fullfil.Readymade();
 
 	// Create VBOs
 	CreateVertexBufferObjects();
@@ -766,6 +791,22 @@ void Renderer::CreateLecture5Line(int seg_count)
 	VertexBuffer lecture5_seg(GL_ARRAY_BUFFER);
 	lecture5_seg.Bind(line_vertices, sizeof(float) * float_count, GL_STATIC_DRAW);
 	vboLecture5LineSegment.Attach(&lecture5_seg, 1);
+
+	constexpr float rect_sz = 1.0f;
+
+	// (x, y, z) * 6°³
+	constexpr float ptLecture5[] = {
+		-rect_sz, -rect_sz, 0.0f,
+		+rect_sz, +rect_sz, 0.0f,
+		-rect_sz, +rect_sz, 0.0f,
+		-rect_sz, -rect_sz, 0.0f,
+		+rect_sz, -rect_sz, 0.0f,
+		+rect_sz, +rect_sz, 0.0f
+	};
+
+	VertexBuffer lecture5_filler(GL_ARRAY_BUFFER);
+	lecture5_filler.Bind(ptLecture5, sizeof(ptLecture5), GL_STATIC_DRAW);
+	vboLecture5Fullfil.Attach(&lecture5_filler, 1);
 }
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)

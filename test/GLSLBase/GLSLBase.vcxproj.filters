@@ -102,6 +102,12 @@
     <None Include="Shaders\Lecture5Curve.vs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shaders\FullRect.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\FullRect.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">
