@@ -220,7 +220,7 @@ void Renderer::Lecture4RaderCircle()
 	//attrPosition.EnableVertexArray();
 	//attrPosition.Stream(GL_FLOAT, 3, stride);
 	
-	//*
+	/*
 	//* Package 0
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
@@ -241,7 +241,7 @@ void Renderer::Lecture4RaderCircle()
 	attrColour.Stream(GL_FLOAT, 4, col_stride);
 	//*/
 	
-	/*
+	//*
 	//* Packge 1
 	// (x, y, z, r, g, b, a)
 	pipeline.UseBuffer(vboPackaged1, GL_ARRAY_BUFFER);
@@ -254,7 +254,7 @@ void Renderer::Lecture4RaderCircle()
 	GLsizei pos_stride = sizeof(float) * 7;
 	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
 	GLsizei col_stride = sizeof(float) * 7;
-	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 3));
+	attrColour.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 3));
 	//*/
 
 	/* Packge 2
