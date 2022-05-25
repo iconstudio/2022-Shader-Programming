@@ -109,17 +109,26 @@ vec4 DrawRaderCirle(vec2 centre, vec2 pos)
 
 	int count = 2;
 	float rader_sin_value = sin(count * rader_factor);
-	float wave = pow(rader_sin_value, 16);
+	int rader_range = 4;
 
+	float wave = clamp(pow(rader_sin_value, rader_range), 0.0f, 1.0f);
+
+	float magnificent = 2.0f;
+	vec4 result = vec4(wave / magnificent);
 	for (int i = 0; i < 10; i++)
 	{
 		float dist = distance(u_Points[i].xy, pos);
-		float factor = (dist * 2 * g_PI);
-		float sin_value = sin(count * factor);
-		sin_value = clamp(sin_value, 0.0f, 1.0f);
+		if (dist < 0.1f)
+		{
+			float greener = 10 * rader_sin_value * (0.1f - dist) * magnificent;
+			result += vec4(0, magnificent, 0, 0);
+		}
+		//float factor = (dist * 2 * g_PI);
+		//float sin_value = sin(count * factor);
+		//sin_value = clamp(sin_value, 0.0f, 1.0f);
 		
-		wave += sin_value * 0.2f;
+		//wave += sin_value * 0.2f;
 	}
 
-	return vec4(wave);
+	return result;
 }
