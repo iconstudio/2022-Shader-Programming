@@ -286,6 +286,26 @@ void Renderer::Lecture4RaderCircle()
 	attrPosition.DisableVertexArray();
 }
 
+void Renderer::Lecture5LineSegment()
+{
+	auto& pipeline = plLecture5Curve;
+	pipeline.Use();
+
+	// (x, y, z)
+	pipeline.UseBuffer(vboLecture5LineSegment, GL_ARRAY_BUFFER);
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+
+	// 3°³ °£°Ý
+	GLsizei pos_stride = sizeof(float) * 3;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+
+	Render(PRIMITIVE_METHODS::LINE_STRIP, 0, vboLecture5SegCount);
+
+	attrPosition.DisableVertexArray();
+}
+
 void Renderer::Test()
 {
 	auto& pipeline = plSolidRect;
@@ -316,6 +336,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture3.AssignProgram(CreatePipeline());
 	plLecture3Particle.AssignProgram(CreatePipeline());
 	plLecture4.AssignProgram(CreatePipeline());
+	plLecture5Curve.AssignProgram(CreatePipeline());
 
 	// Load shaders
 	plSolidRect.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
@@ -323,6 +344,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture3.LoadShaders("./Shaders/Lecture3.vs", "./Shaders/Lecture3.fs");
 	plLecture3Particle.LoadShaders("./Shaders/Lecture3Particle.vs", "./Shaders/Lecture3Particle.fs");
 	plLecture4.LoadShaders("./Shaders/Lecture4Sandbox.vs", "./Shaders/Lecture4Sandbox.fs");
+	plLecture5Curve.LoadShaders("./Shaders/Lecture5Curve.vs", "./Shaders/Lecture5Curve.fs");
 
 	// Ready
 	plSolidRect.Readymade();
@@ -330,11 +352,13 @@ void Renderer::Initialize(int width, int height)
 	plLecture3.Readymade();
 	plLecture3Particle.Readymade();
 	plLecture4.Readymade();
+	plLecture5Curve.Readymade();
 
 	// Create VBOs
 	CreateVertexBufferObjects();
 	CreateLecture3Particle(1000);
 	CreateLecture4Objects();
+	CreateLecture5Line(40);
 
 	// Initialize camera settings
 	cameraPositions = glm::vec3(0.f, 0.f, 1000.f);
@@ -420,98 +444,6 @@ void Renderer::CreateVertexBufferObjects()
 	VertexBuffer lecture3part_vbo(GL_ARRAY_BUFFER);
 	lecture3part_vbo.Bind(rect_lecture3part, sizeof(rect_lecture3part), GL_STATIC_DRAW);
 	vbQuadParticle.Attach(&lecture3part_vbo, 1);
-
-	constexpr float rect_lecture4_sz = 0.6f;
-	// (x, y, z, r, g, b, a)
-	constexpr float rect_lecture4[] =
-	{
-		// Triangle1
-		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-
-		// Triangle2
-		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-	};
-	VertexBuffer lecture4_vbo(GL_ARRAY_BUFFER);
-	lecture4_vbo.Bind(rect_lecture4, sizeof(rect_lecture4), GL_STATIC_DRAW);
-	vbQuadLecture4.Attach(&lecture4_vbo, 1);
-
-	// (x, y, z)
-	constexpr float rect4_packaged0_pos[] =
-	{
-		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, //
-		-rect_lecture4_sz, +rect_lecture4_sz, 0.0f,
-		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
-
-		 +rect_lecture4_sz, -rect_lecture4_sz, 0.0, //
-		 -rect_lecture4_sz, +rect_lecture4_sz, 0.0,
-		 +rect_lecture4_sz, +rect_lecture4_sz, 0.0,
-	};
-
-	// glGenBuffer(1, lecture4_pack0_pos_vbo);
-	// glGenBuffer(BL_ARRAY_BUFFER, lecture4_pack0_pos_vbo);
-	VertexBuffer lecture4_pack0_pos_vbo(GL_ARRAY_BUFFER);
-	lecture4_pack0_pos_vbo.Bind(rect4_packaged0_pos, sizeof(rect4_packaged0_pos), GL_STATIC_DRAW);
-	vboPackaged0Pos.Attach(&lecture4_pack0_pos_vbo, 1);
-
-	// (r, g, b, a)
-	constexpr float rect4_packaged0_color[] =
-	{
-		1.0f, 1.0f, 1.0f, 1.0f, //
-		1.0f, 1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-
-		1.0f, 1.0f, 1.0f, 1.0f, //
-		1.0f, 1.0f, 1.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-	};
-	VertexBuffer lecture4_pack0_col_vbo(GL_ARRAY_BUFFER);
-	lecture4_pack0_col_vbo.Bind(rect4_packaged0_color, sizeof(rect4_packaged0_color), GL_STATIC_DRAW);
-	vboPackaged0Color.Attach(&lecture4_pack0_col_vbo, 1);
-
-	// (x, y, z, r, g, b, a)
-	constexpr float rec4t_packaged1[] =
-	{
-		// Triangle1
-		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-
-		// Triangle2
-		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-	};
-	VertexBuffer lecture4_pack1_vbo(GL_ARRAY_BUFFER);
-	lecture4_pack1_vbo.Bind(rec4t_packaged1, sizeof(rec4t_packaged1), GL_STATIC_DRAW);
-	vboPackaged1.Attach(&lecture4_pack1_vbo, 1);
-
-	// (x0, y0, z0, x1, y1, z1, ... , r0, g0, b0, a0, ...)
-	constexpr float rec4t_packaged2[] =
-	{
-		// Triangle1 pos
-		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
-		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
-		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
-
-		// Triangle2 pos
-		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
-		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
-		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
-
-		// Triangle1 color
-		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-
-		// Triangle2 color
-		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-	};
-	VertexBuffer lecture4_pack2_vbo(GL_ARRAY_BUFFER);
-	lecture4_pack2_vbo.Bind(rec4t_packaged2, sizeof(rec4t_packaged2), GL_STATIC_DRAW);
-	vboPackaged2.Attach(&lecture4_pack2_vbo, 1);
-
 }
 
 void Renderer::CreateLecture3Particle(const int count)
@@ -714,7 +646,120 @@ void Renderer::CreateLecture3Particle(const int count)
 }
 
 void Renderer::CreateLecture4Objects()
-{}
+{
+	constexpr float rect_lecture4_sz = 0.6f;
+	// (x, y, z, r, g, b, a)
+	constexpr float rect_lecture4[] =
+	{
+		// Triangle1
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_vbo(GL_ARRAY_BUFFER);
+	lecture4_vbo.Bind(rect_lecture4, sizeof(rect_lecture4), GL_STATIC_DRAW);
+	vbQuadLecture4.Attach(&lecture4_vbo, 1);
+
+	// (x, y, z)
+	constexpr float rect4_packaged0_pos[] =
+	{
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, //
+		-rect_lecture4_sz, +rect_lecture4_sz, 0.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+
+		 +rect_lecture4_sz, -rect_lecture4_sz, 0.0, //
+		 -rect_lecture4_sz, +rect_lecture4_sz, 0.0,
+		 +rect_lecture4_sz, +rect_lecture4_sz, 0.0,
+	};
+
+	// glGenBuffer(1, lecture4_pack0_pos_vbo);
+	// glGenBuffer(BL_ARRAY_BUFFER, lecture4_pack0_pos_vbo);
+	VertexBuffer lecture4_pack0_pos_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack0_pos_vbo.Bind(rect4_packaged0_pos, sizeof(rect4_packaged0_pos), GL_STATIC_DRAW);
+	vboPackaged0Pos.Attach(&lecture4_pack0_pos_vbo, 1);
+
+	// (r, g, b, a)
+	constexpr float rect4_packaged0_color[] =
+	{
+		1.0f, 1.0f, 1.0f, 1.0f, //
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+
+		1.0f, 1.0f, 1.0f, 1.0f, //
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack0_col_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack0_col_vbo.Bind(rect4_packaged0_color, sizeof(rect4_packaged0_color), GL_STATIC_DRAW);
+	vboPackaged0Color.Attach(&lecture4_pack0_col_vbo, 1);
+
+	// (x, y, z, r, g, b, a)
+	constexpr float rec4t_packaged1[] =
+	{
+		// Triangle1
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack1_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack1_vbo.Bind(rec4t_packaged1, sizeof(rec4t_packaged1), GL_STATIC_DRAW);
+	vboPackaged1.Attach(&lecture4_pack1_vbo, 1);
+
+	// (x0, y0, z0, x1, y1, z1, ... , r0, g0, b0, a0, ...)
+	constexpr float rec4t_packaged2[] =
+	{
+		// Triangle1 pos
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+
+		// Triangle2 pos
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+
+		// Triangle1 color
+		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2 color
+		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack2_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack2_vbo.Bind(rec4t_packaged2, sizeof(rec4t_packaged2), GL_STATIC_DRAW);
+	vboPackaged2.Attach(&lecture4_pack2_vbo, 1);
+}
+
+void Renderer::CreateLecture5Line(int seg_count)
+{
+	const int float_count = seg_count * 3;
+	auto line_vertices = new float[float_count];
+
+	vboLecture5SegCount = seg_count;
+
+	for (int i = 0; i < seg_count; ++i)
+	{
+		// x
+		line_vertices[i++] = -1.0f + float(i / seg_count) * 2.0f;
+		// y
+		line_vertices[i++] = 0.0f;
+		// z
+		line_vertices[i++] = 0.0f;
+	}
+
+	VertexBuffer lecture5_seg(GL_ARRAY_BUFFER);
+	lecture5_seg.Bind(line_vertices, sizeof(float) * float_count, GL_STATIC_DRAW);
+	vboLecture5LineSegment.Attach(&lecture5_seg, 1);
+}
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)
 {
