@@ -214,11 +214,11 @@ void Renderer::Lecture4RaderCircle()
 	pipeline.Use();
 
 	// 원본
-	//pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
-	//GLsizei stride = sizeof(float) * 7;
-	//auto attrPosition = pipeline.GetAttribute("a_Position");
-	//attrPosition.EnableVertexArray();
-	//attrPosition.Stream(GL_FLOAT, 3, stride);
+	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
+	GLsizei stride = sizeof(float) * 7;
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+	attrPosition.Stream(GL_FLOAT, 3, stride);
 	
 	/*
 	//* Package 0
@@ -242,7 +242,7 @@ void Renderer::Lecture4RaderCircle()
 	//*/
 	
 	//*
-	//* Packge 1
+	/* Packge 1
 	// (x, y, z, r, g, b, a)
 	pipeline.UseBuffer(vboPackaged1, GL_ARRAY_BUFFER);
 
@@ -273,7 +273,7 @@ void Renderer::Lecture4RaderCircle()
 	// 색은 4개 간격
 	GLsizei col_stride = sizeof(float) * 4;
 	// 색상은 맨 뒤로 밀려나있다.
-	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 18));
+	attrColour.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 18));
 	//*/
 
 	auto uniformPoints = pipeline.GetUniform("u_Points");
