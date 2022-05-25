@@ -303,6 +303,10 @@ void Renderer::Lecture5LineSegment()
 	GLsizei pos_stride = sizeof(float) * 3;
 	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
 
+	auto uniformTime = pipeline.GetUniform("u_Time");
+	uniformTime.Stream(Time);
+	Time += 0.01f;
+
 	Render(PRIMITIVE_METHODS::LINE_STRIP, 0, vboLecture5SegCount);
 
 	attrPosition.DisableVertexArray();
@@ -748,14 +752,15 @@ void Renderer::CreateLecture5Line(int seg_count)
 
 	vboLecture5SegCount = seg_count;
 
+	int index = 0;
 	for (int i = 0; i < seg_count; ++i)
 	{
 		// x
-		line_vertices[i++] = -1.0f + float(i / seg_count) * 2.0f;
+		line_vertices[index++] = -1.0f + float(i) / float(seg_count - 1) * 2.0f;
 		// y
-		line_vertices[i++] = 0.0f;
+		line_vertices[index++] = 0.0f;
 		// z
-		line_vertices[i++] = 0.0f;
+		line_vertices[index++] = 0.0f;
 	}
 
 	VertexBuffer lecture5_seg(GL_ARRAY_BUFFER);
