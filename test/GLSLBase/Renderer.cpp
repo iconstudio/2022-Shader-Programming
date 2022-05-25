@@ -212,13 +212,67 @@ void Renderer::Lecture4RaderCircle()
 {
 	auto& pipeline = plLecture4;
 	pipeline.Use();
-	pipeline.UseBuffer(vbQuadLecture4, GL_ARRAY_BUFFER);
 
-	GLsizei stride = sizeof(float) * 7;
+	// 원본
+	//GLsizei stride = sizeof(float) * 7;
+	//auto attrPosition = pipeline.GetAttribute("a_Position");
+	//attrPosition.EnableVertexArray();
+	//attrPosition.Stream(GL_FLOAT, 3, stride);
+	
+	/*
+	//* Package 0
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+
+	// (x, y, z)
+	pipeline.UseBuffer(vboPackaged0Pos, GL_ARRAY_BUFFER);
+	// 0이어도 된다.
+	GLsizei pos_stride = sizeof(float) * 3;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+
+	auto attrColour = pipeline.GetAttribute("a_Colour");
+	attrColour.EnableVertexArray();
+
+	// (r, g, b, a)
+	pipeline.UseBuffer(vboPackaged0Color, GL_ARRAY_BUFFER);
+	// 0이어도 된다.
+	GLsizei col_stride = sizeof(float) * 4;
+	attrPosition.Stream(GL_FLOAT, 4, col_stride);
+	*/
+
+	/*
+	//* Packge 1
+	// (x, y, z, r, g, b, a)
+	pipeline.UseBuffer(vboPackaged1, GL_ARRAY_BUFFER);
 
 	auto attrPosition = pipeline.GetAttribute("a_Position");
 	attrPosition.EnableVertexArray();
-	attrPosition.Stream(GL_FLOAT, 3, stride);
+	auto attrColour = pipeline.GetAttribute("a_Colour");
+	attrColour.EnableVertexArray();
+
+	GLsizei pos_stride = sizeof(float) * 7;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+	GLsizei col_stride = sizeof(float) * 7;
+	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 3));
+	*/
+
+	//* Packge 2
+	// (x, y, z, ..., r, g, b, a)
+	pipeline.UseBuffer(vboPackaged2, GL_ARRAY_BUFFER);
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+	auto attrColour = pipeline.GetAttribute("a_Colour");
+	attrColour.EnableVertexArray();
+
+	// 위치는 3개 간격
+	GLsizei pos_stride = sizeof(float) * 3;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+
+	// 색은 4개 간격
+	GLsizei col_stride = sizeof(float) * 4;
+	// 색상은 맨 뒤로 밀려나있다.
+	attrPosition.Stream(GL_FLOAT, 4, col_stride, (GLvoid*)(sizeof(float) * 18));
 
 	auto uniformPoints = pipeline.GetUniform("u_Points");
 	glUniform3fv(uniformPoints.Self, 10, g_ptLecture4);
@@ -384,6 +438,80 @@ void Renderer::CreateVertexBufferObjects()
 	VertexBuffer lecture4_vbo(GL_ARRAY_BUFFER);
 	lecture4_vbo.Bind(rect_lecture4, sizeof(rect_lecture4), GL_STATIC_DRAW);
 	vbQuadLecture4.Attach(&lecture4_vbo, 1);
+
+	// (x, y, z)
+	constexpr float rect4_packaged0_pos[] =
+	{
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, //
+		-rect_lecture4_sz, +rect_lecture4_sz, 0.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+
+		 +rect_lecture4_sz, -rect_lecture4_sz, 0.0, //
+		 -rect_lecture4_sz, +rect_lecture4_sz, 0.0,
+		 +rect_lecture4_sz, +rect_lecture4_sz, 0.0,
+	};
+
+	// glGenBuffer(1, lecture4_pack0_pos_vbo);
+	// glGenBuffer(BL_ARRAY_BUFFER, lecture4_pack0_pos_vbo);
+	VertexBuffer lecture4_pack0_pos_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack0_pos_vbo.Bind(rect4_packaged0_pos, sizeof(rect4_packaged0_pos), GL_STATIC_DRAW);
+	vboPackaged0Pos.Attach(&lecture4_pack0_pos_vbo, 1);
+
+	// (r, g, b, a)
+	constexpr float rect4_packaged0_color[] =
+	{
+		1.0f, 1.0f, 1.0f, 1.0f, //
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+
+		1.0f, 1.0f, 1.0f, 1.0f, //
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack0_col_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack0_col_vbo.Bind(rect4_packaged0_color, sizeof(rect4_packaged0_color), GL_STATIC_DRAW);
+	vboPackaged0Color.Attach(&lecture4_pack0_col_vbo, 1);
+
+	// (x, y, z, r, g, b, a)
+	constexpr float rec4t_packaged1[] =
+	{
+		// Triangle1
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack1_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack1_vbo.Bind(rec4t_packaged1, sizeof(rec4t_packaged1), GL_STATIC_DRAW);
+	vboPackaged1.Attach(&lecture4_pack1_vbo, 1);
+
+	// (x0, y0, z0, x1, y1, z1, ... , r0, g0, b0, a0, ...)
+	constexpr float rec4t_packaged2[] =
+	{
+		// Triangle1 pos
+		-rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+		-rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+		 rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+
+		// Triangle2 pos
+		  rect_lecture4_sz, -rect_lecture4_sz, 0.0f,
+		 -rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+		  rect_lecture4_sz,  rect_lecture4_sz, 0.0f,
+
+		// Triangle1 color
+		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+
+		// Triangle2 color
+		1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+	};
+	VertexBuffer lecture4_pack2_vbo(GL_ARRAY_BUFFER);
+	lecture4_pack2_vbo.Bind(rec4t_packaged2, sizeof(rec4t_packaged2), GL_STATIC_DRAW);
+	vboPackaged2.Attach(&lecture4_pack2_vbo, 1);
+
 }
 
 void Renderer::CreateLecture3Particle(const int count)
@@ -586,8 +714,7 @@ void Renderer::CreateLecture3Particle(const int count)
 }
 
 void Renderer::CreateLecture4Objects()
-{
-}
+{}
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)
 {

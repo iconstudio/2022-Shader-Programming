@@ -3,6 +3,7 @@ attribute vec3 a_Position;
 
 out vec3 v_Position;
 out vec4 v_Colour; // out
+out vec4 v_ColourOverride;
 
 void main()
 {

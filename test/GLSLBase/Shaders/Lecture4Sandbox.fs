@@ -4,6 +4,7 @@ layout(location=0) out vec4 FragColor;
 
 in vec3 v_Position;
 in vec4 v_Colour;
+in vec4 v_ColourOverride;
 in vec2 v_TexCoord;
 
 uniform vec3 u_Points[10];
@@ -37,6 +38,7 @@ void main()
 	//FragColor += DrawCircle(u_Points[4].xy , v_Colour.xy);
 
 	FragColor = DrawRaderCirle(vec2(0.5f, 0.0f), v_Colour.xy);
+	FragColor *= v_ColourOverride;
 }
 
 vec4 CrossPattern()
