@@ -36,8 +36,8 @@ public:
 	void Lecture5Fullfil();
 	void Lecture6Texture();
 
-	GLuint CreatePngTexture(char* filePath);
-	GLuint CreateBmpTexture(char* filePath);
+	GLuint CreatePngTexture(const char* filePath);
+	GLuint CreateBmpTexture(const char* filePath);
 
 private:
 	void Initialize(int width, int height);
@@ -93,6 +93,7 @@ private:
 	VertexObjet vboLecture5Fullfil;
 
 	GLuint texLecture6Checker = 0;
+	GLuint texLecture6RGB = 0;
 	VertexObjet vboLecture6Positions;
 
 	float ptLecture4[30]; // (x, y, z) * 10°³

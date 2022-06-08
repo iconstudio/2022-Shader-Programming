@@ -355,7 +355,7 @@ void Renderer::Lecture6Texture()
 	auto index_uniformTex = uniformTex.Self;
 	glUniform1i(index_uniformTex, 0);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texLecture6Checker);
+	glBindTexture(GL_TEXTURE_2D, texLecture6RGB);
 
 	//auto uniformTime = pipeline.GetUniform("u_Time");
 	//uniformTime.Stream(Time);
@@ -849,6 +849,8 @@ void Renderer::CreateLecture5Line(int seg_count)
 
 void Renderer::CreateLecture6Textures()
 {
+	texLecture6RGB = CreatePngTexture("image1.png");
+
 	constexpr GLulong checkerboard[] =
 	{
 	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
@@ -963,7 +965,7 @@ PUCHAR Renderer::loadBMPRaw(const char* image, UINT& width, UINT& height)
 	return data;
 }
 
-GLuint Renderer::CreatePngTexture(char* file)
+GLuint Renderer::CreatePngTexture(const char* file)
 {
 	//Load Pngs: Load file and decode image.
 	std::vector<unsigned char> image;
@@ -988,12 +990,11 @@ GLuint Renderer::CreatePngTexture(char* file)
 	return temp;
 }
 
-GLuint Renderer::CreateBmpTexture(char* file)
+GLuint Renderer::CreateBmpTexture(const char* file)
 {
 	//Load Bmp: Load file and decode image.
 	unsigned int width, height;
-	unsigned char* bmp
-		= loadBMPRaw(file, width, height);
+	unsigned char* bmp = loadBMPRaw(file, width, height);
 
 	if (bmp == NULL)
 	{
