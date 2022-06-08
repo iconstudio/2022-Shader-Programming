@@ -108,6 +108,12 @@
     <None Include="Shaders\FullRect.vs">
       <Filter>Shader</Filter>
     </None>
+    <None Include="Shaders\Lecture6Tex.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shaders\Lecture6Tex.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source">

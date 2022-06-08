@@ -34,6 +34,7 @@ public:
 	void Lecture4RaderCircle();
 	void Lecture5LineSegment();
 	void Lecture5Fullfil();
+	void Lecture6Texture();
 
 	GLuint CreatePngTexture(char* filePath);
 	GLuint CreateBmpTexture(char* filePath);
@@ -47,6 +48,7 @@ private:
 	void CreateLecture3Particle(const int count);
 	void CreateLecture4Objects();
 	void CreateLecture5Line(int seg_count);
+	void CreateLecture6Textures();
 
 	void Render(PRIMITIVE_METHODS method, GLint first, GLsizei count);
 
@@ -72,14 +74,15 @@ private:
 	Pipeline plLecture4;
 	Pipeline plLecture5Curve;
 	Pipeline plLecture5Fullfil;
+	Pipeline plLecture6Tex;
 
 	VertexObjet vbSolidRect;
 	VertexObjet vbLecture2;
 	VertexObjet vbLecture3;
 	VertexObjet vbQuadParticle;
 	GLuint countParticleVertex = 0;
-	VertexObjet vbQuadLecture4;
 
+	VertexObjet vbQuadLecture4;
 	VertexObjet vboPackaged0Pos;
 	VertexObjet vboPackaged0Color;
 	VertexObjet vboPackaged1;
@@ -87,8 +90,10 @@ private:
 
 	VertexObjet vboLecture5LineSegment;
 	GLsizei vboLecture5SegCount;
-
 	VertexObjet vboLecture5Fullfil;
+
+	GLuint texLecture6Checker = 0;
+	VertexObjet vboLecture6Positions;
 
 	float ptLecture4[30]; // (x, y, z) * 10°³
 	float ptLecture5[18]; // (x, y, z) * 6°³

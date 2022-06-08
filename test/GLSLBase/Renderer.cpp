@@ -334,6 +334,40 @@ void Renderer::Lecture5Fullfil()
 	attrPosition.DisableVertexArray();
 }
 
+void Renderer::Lecture6Texture()
+{
+	auto& pipeline = plLecture6Tex;
+	pipeline.Use();
+	pipeline.UseBuffer(vboLecture6Positions, GL_ARRAY_BUFFER);
+
+	auto attrPosition = pipeline.GetAttribute("a_Position");
+	attrPosition.EnableVertexArray();
+
+	auto attrTexCoord = pipeline.GetAttribute("a_TexCoord");
+	attrTexCoord.EnableVertexArray();
+
+	GLsizei pos_stride = sizeof(float) * 5;
+	attrPosition.Stream(GL_FLOAT, 3, pos_stride);
+	auto begin = (GLvoid*)(sizeof(float) * 3);
+	attrTexCoord.Stream(GL_FLOAT, 2, pos_stride, begin);
+
+	auto uniformTex = pipeline.GetUniform("u_Texture");
+	auto index_uniformTex = uniformTex.Self;
+	glUniform1i(index_uniformTex, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texLecture6Checker);
+
+	//auto uniformTime = pipeline.GetUniform("u_Time");
+	//uniformTime.Stream(Time);
+	//Time += 0.01f;
+
+	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
+
+	attrPosition.DisableVertexArray();
+	attrTexCoord.DisableVertexArray();
+	//glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void Renderer::Test()
 {
 	auto& pipeline = plSolidRect;
@@ -366,6 +400,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture4.AssignProgram(CreatePipeline());
 	plLecture5Curve.AssignProgram(CreatePipeline());
 	plLecture5Fullfil.AssignProgram(CreatePipeline());
+	plLecture6Tex.AssignProgram(CreatePipeline());
 
 	// Load shaders
 	plSolidRect.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
@@ -375,6 +410,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture4.LoadShaders("./Shaders/Lecture4Sandbox.vs", "./Shaders/Lecture4Sandbox.fs");
 	plLecture5Curve.LoadShaders("./Shaders/Lecture5Curve.vs", "./Shaders/Lecture5Curve.fs");
 	plLecture5Fullfil.LoadShaders("./Shaders/FullRect.vs", "./Shaders/FullRect.fs");
+	plLecture6Tex.LoadShaders("./Shaders/Lecture6Tex.vs", "./Shaders/Lecture6Tex.fs");
 
 	// Ready
 	plSolidRect.Readymade();
@@ -384,12 +420,14 @@ void Renderer::Initialize(int width, int height)
 	plLecture4.Readymade();
 	plLecture5Curve.Readymade();
 	plLecture5Fullfil.Readymade();
+	plLecture6Tex.Readymade();
 
 	// Create VBOs
 	CreateVertexBufferObjects();
 	CreateLecture3Particle(1000);
 	CreateLecture4Objects();
 	CreateLecture5Line(40);
+	CreateLecture6Textures();
 
 	// Initialize camera settings
 	cameraPositions = glm::vec3(0.f, 0.f, 1000.f);
@@ -807,6 +845,49 @@ void Renderer::CreateLecture5Line(int seg_count)
 	VertexBuffer lecture5_filler(GL_ARRAY_BUFFER);
 	lecture5_filler.Bind(ptLecture5, sizeof(ptLecture5), GL_STATIC_DRAW);
 	vboLecture5Fullfil.Attach(&lecture5_filler, 1);
+}
+
+void Renderer::CreateLecture6Textures()
+{
+	constexpr GLulong checkerboard[] =
+	{
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000,
+	0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF,
+	};
+
+	glGenTextures(1, &texLecture6Checker);
+	glBindTexture(GL_TEXTURE_2D, texLecture6Checker);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerboard);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	constexpr float rect_sz = 0.5f;
+	// (x, y, z, u, v)
+	constexpr float myrect[] =
+	{
+		// Triangle1 pos
+		-rect_sz, -rect_sz, 0.0f, 0.0f, 0.0f,
+		+rect_sz, -rect_sz, 0.0f, 1.0f, 0.0f,
+		+rect_sz, +rect_sz, 0.0f, 1.0f, 1.0f,
+
+		// Triangle2 pos
+		-rect_sz, -rect_sz, 0.0f, 0.0f, 0.0f,
+		-rect_sz, +rect_sz, 0.0f, 0.0f, 1.0f,
+		+rect_sz, +rect_sz, 0.0f, 1.0f, 1.0f,
+	};
+
+	VertexBuffer lecture6_rect_vbo(GL_ARRAY_BUFFER);
+	lecture6_rect_vbo.Bind(myrect, sizeof(myrect), GL_STATIC_DRAW);
+	vboLecture6Positions.Attach(&lecture6_rect_vbo, 1);
 }
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)

@@ -26,7 +26,8 @@ void RenderScene(void)
 	//g_Renderer->Lecture4Raindrop();
 	//g_Renderer->Lecture4RaderCircle();
 	//g_Renderer->Lecture5LineSegment();
-	g_Renderer->Lecture5Fullfil();
+	//g_Renderer->Lecture5Fullfil();
+	g_Renderer->Lecture6Texture();
 
 	glutSwapBuffers();
 }
