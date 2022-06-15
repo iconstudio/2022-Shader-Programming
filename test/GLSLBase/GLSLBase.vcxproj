@@ -203,8 +203,10 @@
     <None Include="Shaders\Lecture4Sandbox.vs" />
     <None Include="Shaders\Lecture5Curve.fs" />
     <None Include="Shaders\Lecture5Curve.vs" />
-    <None Include="Shaders\Lecture6Tex.fs" />
-    <None Include="Shaders\Lecture6Tex.vs" />
+    <None Include="Shaders\Lecture6TexP.glsl" />
+    <None Include="Shaders\Lecture6TexV.glsl">
+      <FileType>Document</FileType>
+    </None>
     <None Include="Shaders\MyParticle.fs" />
     <None Include="Shaders\MyParticle.vs" />
     <None Include="Shaders\SolidRect.fs" />

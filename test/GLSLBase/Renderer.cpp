@@ -351,15 +351,21 @@ void Renderer::Lecture6Texture()
 	auto begin = (GLvoid*)(sizeof(float) * 3);
 	attrTexCoord.Stream(GL_FLOAT, 2, pos_stride, begin);
 
-	auto uniformTex = pipeline.GetUniform("u_Texture");
+	auto uniformTex = pipeline.GetUniform("u_TexRGB");
 	auto index_uniformTex = uniformTex.Self;
 	glUniform1i(index_uniformTex, 0);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texLecture6RGB);
 
-	//auto uniformTime = pipeline.GetUniform("u_Time");
-	//uniformTime.Stream(Time);
-	//Time += 0.01f;
+	uniformTex = pipeline.GetUniform("u_TexChecker");
+	index_uniformTex = uniformTex.Self;
+	glUniform1i(index_uniformTex, 1);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texLecture6Checker);
+
+	auto uniformTime = pipeline.GetUniform("u_Time");
+	uniformTime.Stream(Time);
+	Time += 0.01f;
 
 	Render(PRIMITIVE_METHODS::TRIANGLES, 0, 6);
 
@@ -367,6 +373,9 @@ void Renderer::Lecture6Texture()
 	attrTexCoord.DisableVertexArray();
 	//glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+void Renderer::Lecture8GridMesh()
+{}
 
 void Renderer::Test()
 {
@@ -401,6 +410,7 @@ void Renderer::Initialize(int width, int height)
 	plLecture5Curve.AssignProgram(CreatePipeline());
 	plLecture5Fullfil.AssignProgram(CreatePipeline());
 	plLecture6Tex.AssignProgram(CreatePipeline());
+	plLecture8GridMesh.AssignProgram(CreatePipeline());
 
 	// Load shaders
 	plSolidRect.LoadShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
@@ -410,7 +420,8 @@ void Renderer::Initialize(int width, int height)
 	plLecture4.LoadShaders("./Shaders/Lecture4Sandbox.vs", "./Shaders/Lecture4Sandbox.fs");
 	plLecture5Curve.LoadShaders("./Shaders/Lecture5Curve.vs", "./Shaders/Lecture5Curve.fs");
 	plLecture5Fullfil.LoadShaders("./Shaders/FullRect.vs", "./Shaders/FullRect.fs");
-	plLecture6Tex.LoadShaders("./Shaders/Lecture6Tex.vs", "./Shaders/Lecture6Tex.fs");
+	plLecture6Tex.LoadShaders("./Shaders/Lecture6TexV.glsl", "./Shaders/Lecture6TexP.glsl");
+	plLecture8GridMesh.LoadShaders("./Shaders/Lecture6TexV.glsl", "./Shaders/Lecture6TexP.glsl");
 
 	// Ready
 	plSolidRect.Readymade();
@@ -890,6 +901,11 @@ void Renderer::CreateLecture6Textures()
 	VertexBuffer lecture6_rect_vbo(GL_ARRAY_BUFFER);
 	lecture6_rect_vbo.Bind(myrect, sizeof(myrect), GL_STATIC_DRAW);
 	vboLecture6Positions.Attach(&lecture6_rect_vbo, 1);
+}
+
+void Renderer::CreateLecture8GridMesh()
+{
+
 }
 
 void Renderer::Render(PRIMITIVE_METHODS method, GLint first, GLsizei count)

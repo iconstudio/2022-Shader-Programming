@@ -35,6 +35,7 @@ public:
 	void Lecture5LineSegment();
 	void Lecture5Fullfil();
 	void Lecture6Texture();
+	void Lecture8GridMesh();
 
 	GLuint CreatePngTexture(const char* filePath);
 	GLuint CreateBmpTexture(const char* filePath);
@@ -49,6 +50,7 @@ private:
 	void CreateLecture4Objects();
 	void CreateLecture5Line(int seg_count);
 	void CreateLecture6Textures();
+	void CreateLecture8GridMesh();
 
 	void Render(PRIMITIVE_METHODS method, GLint first, GLsizei count);
 
@@ -75,6 +77,7 @@ private:
 	Pipeline plLecture5Curve;
 	Pipeline plLecture5Fullfil;
 	Pipeline plLecture6Tex;
+	Pipeline plLecture8GridMesh;
 
 	VertexObjet vbSolidRect;
 	VertexObjet vbLecture2;
@@ -95,6 +98,8 @@ private:
 	GLuint texLecture6Checker = 0;
 	GLuint texLecture6RGB = 0;
 	VertexObjet vboLecture6Positions;
+
+	VertexObjet vboLecture6GridMesh;
 
 	float ptLecture4[30]; // (x, y, z) * 10°³
 	float ptLecture5[18]; // (x, y, z) * 6°³
