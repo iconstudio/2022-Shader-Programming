@@ -207,6 +207,10 @@
     <None Include="Shaders\Lecture6TexV.glsl">
       <FileType>Document</FileType>
     </None>
+    <None Include="Shaders\Lecture8TexsP.glsl" />
+    <None Include="Shaders\Lecture8TexsV.glsl" />
+    <None Include="Shaders\Lecture9GridP.glsl" />
+    <None Include="Shaders\Lecture9GridV.glsl" />
     <None Include="Shaders\MyParticle.fs" />
     <None Include="Shaders\MyParticle.vs" />
     <None Include="Shaders\SolidRect.fs" />
